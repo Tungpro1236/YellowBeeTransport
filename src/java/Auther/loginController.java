@@ -12,27 +12,25 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import DAO.AccountsDAO;
-    import Model.Accounts;  
-
-
+import DAO.UserDAO;
+import Model.Accounts;
 
 /**
  *
  * @author regio
  */
-
 public class loginController extends HttpServlet {
-
-   
-    /** 
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
-
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
      *
-
+     *
+     * /**
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
+     * methods.
+     *
+     *
      * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
@@ -67,7 +65,7 @@ public class loginController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-            request.getRequestDispatcher("/login.jsp").forward(request, response);
+        request.getRequestDispatcher("/login.jsp").forward(request, response);
     }
 
     /**
@@ -81,56 +79,54 @@ public class loginController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
-         
         AccountsDAO aDAO = new AccountsDAO();
+        UserDAO uDAO = new UserDAO();
         String username = request.getParameter("username");
         String password = request.getParameter("password");
         Accounts account = aDAO.getAccount(username, password);
 
+        // Kiểm tra trạng thái tài khoản
         if (account == null) {
             request.setAttribute("error", "Invalid username or password");
             request.getRequestDispatcher("/login.jsp").forward(request, response);
             return;
-
-        } 
-        else {
-
-            String role = aDAO.getRoleByUsernameAndPassword(username, password);
-
-            if (role == null) {
-                request.setAttribute("error", "Unauthorized access");
-                request.getRequestDispatcher("/login.jsp").forward(request, response);
-                return;
-            }
-
-
-            // Lưu thông tin vào session
-            HttpSession session = request.getSession();
-            session.setAttribute("account", account);  // Lưu cả object Accounts
-            session.setAttribute("username", username);
-            session.setAttribute("role", role);
-
-            // Điều hướng dựa trên vai trò
-            
-
-            // Lưu vào session
-            request.getSession().setAttribute("username", username);
-            request.getSession().setAttribute("role", role);
-
-            // Điều hướng dựa trên vai trò
-            switch (role.toLowerCase()) {
-                case "Admin":
-                    response.sendRedirect("Admin/dashboard.jsp");
-                    break;
-                case "SurveyStaff":
-                    response.sendRedirect("SurveyStaff/dashboard.jsp");
-                    break;
-                default:
-                    response.sendRedirect("homepage");
-                    break;
-            }
         }
+
+        //  Kiểm tra trạng thái tài khoản (chỉ chạy khi account != null)
+        if (!aDAO.isAccountActive(account.getAccountID())) {
+            request.setAttribute("error", "Your account is deactivated.");
+            request.getRequestDispatcher("/login.jsp").forward(request, response);
+            return;
+        }
+
+        // Kiểm tra role
+        String role = aDAO.getRoleByUsernameAndPassword(username, password);
+        
+        if (role == null) {
+            request.setAttribute("error", "Unauthorized access");
+            request.getRequestDispatcher("/login.jsp").forward(request, response);
+            return;
+        }
+
+        // Lưu thông tin vào session
+        HttpSession session = request.getSession();
+        session.setAttribute("account", account);
+        session.setAttribute("username", username);
+        session.setAttribute("role", role);
+        response.sendRedirect("homepage");
+        //Điều hướng dựa trên role
+//        switch (role) {
+//            case "Admin":
+//                response.sendRedirect("Admin/dashboard.jsp");
+//                break;
+//            case "SurveyStaff":
+//                response.sendRedirect("SurveyStaff/dashboard.jsp");
+//                break;
+//            default:
+//                response.sendRedirect("homepage");
+//                break;
+//        }
+
     }
 
     /**

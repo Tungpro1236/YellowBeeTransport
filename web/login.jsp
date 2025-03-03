@@ -66,14 +66,14 @@
                         <input type="password" class="form-control" id="password" name="password" placeholder="Enter password" required>
                     </div>
                     <div class="text-left mt-2">
-                        <a href="forgotPassword.jsp">Forgot your password?</a>
+                        <a href="forgotPassword">Forgot your password?</a>
                     </div>
 
                     <button type="submit" class="btn btn-primary w-100">Login</button>
                 </form>
 
                 <div class="text-center mt-2">
-                    <a href="signup.jsp">Don't have accounts yet? Sign up</a>
+                    <a href="signup">Don't have accounts yet? Sign up</a>
 
                 </div>
             </div>

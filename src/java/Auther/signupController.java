@@ -6,7 +6,7 @@
 package Auther;
 
 
-import DAO.userDAO;
+import DAO.UserDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -61,7 +61,7 @@ public class signupController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
+            request.getRequestDispatcher("/signup.jsp").forward(request, response);
     }
 
     /**
@@ -76,32 +76,46 @@ public class signupController extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         // Lấy dữ liệu từ form JSP
+        request.setCharacterEncoding("UTF-8");
+        response.setContentType("text/html;charset=UTF-8");
+
+        // Lấy thông tin từ form đăng ký
+        String fullName = request.getParameter("fullname");
         String username = request.getParameter("username");
+        String password = request.getParameter("password");
         String email = request.getParameter("email");
         String phone = request.getParameter("phone");
-        int genderId = Integer.parseInt(request.getParameter("gender"));
         String address = request.getParameter("address");
-        String password = request.getParameter("password");
-        
-        userDAO userDAO = new userDAO();
+        int genderID = Integer.parseInt(request.getParameter("gender"));
+        int roleID = 5; // Role mặc định là Customer
+        int accountStatusID = 1; // Trạng thái mặc định là Active
 
-        // Kiểm tra username hoặc email đã tồn tại chưa
-        if (userDAO.isUsernameOrEmailTaken(username, email)) {
-            request.setAttribute("error", "Username or Email already exists!");
+        UserDAO userDAO = new UserDAO();
+
+        // Kiểm tra username đã tồn tại chưa
+        if (userDAO.isUsernameOrEmailTaken(username,email)) {
+            request.setAttribute("errorMessage", "Username already exists! Please choose another.");
             request.getRequestDispatcher("signup.jsp").forward(request, response);
             return;
         }
 
-        // Tạo tài khoản trong DB
-        boolean success = userDAO.createUser(username, email, phone, genderId, address, password);
+        // Tạo tài khoản trong bảng Accounts
+        int accountID = userDAO.createAccount(username, password, accountStatusID);
+        if (accountID == -1) {
+            request.setAttribute("errorMessage", "Error creating account. Please try again.");
+            request.getRequestDispatcher("signup.jsp").forward(request, response);
+            return;
+        }
 
-        if (success) {
-            request.setAttribute("success", "Signup successful! You can now login.");
-            request.getRequestDispatcher("login.jsp").forward(request, response);
+        // Tạo user trong bảng Users
+        boolean userCreated = userDAO.createUser(fullName, email, phone, address, genderID, accountID, roleID);
+        if (userCreated) {
+            response.sendRedirect("login.jsp"); // Chuyển hướng đến login.jsp với thông báo thành công
         } else {
-            request.setAttribute("error", "Signup failed, please try again!");
+            request.setAttribute("errorMessage", "Error creating user. Please try again.");
             request.getRequestDispatcher("signup.jsp").forward(request, response);
         }
+    
     
     }
 
