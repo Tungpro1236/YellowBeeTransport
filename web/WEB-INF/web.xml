@@ -60,6 +60,18 @@
         <servlet-name>SubmitQuoteController</servlet-name>
         <servlet-class>Controller.SubmitQuoteController</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>AdminDashboardServlet</servlet-name>
+        <servlet-class>Controller.Admin.AdminDashboardServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>AdminManageUser</servlet-name>
+        <servlet-class>Controller.Admin.AdminManageUser</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>AdminDetailUser</servlet-name>
+        <servlet-class>Controller.Admin.AdminDetailUser</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>HomePageServlet</servlet-name>
         <url-pattern>/homepage</url-pattern>
@@ -115,4 +127,17 @@
     <welcome-file-list>
         <welcome-file>homepage</welcome-file>
     </welcome-file-list>
+    <servlet-mapping>
+        <servlet-name>AdminDashboardServlet</servlet-name>
+        <url-pattern>/admin_dashboard</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>AdminManageUser</servlet-name>
+        <url-pattern>/admin_user</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>AdminDetailUser</servlet-name>
+        <url-pattern>/admin_userdetail</url-pattern>
+    </servlet-mapping>
+
 </web-app>
