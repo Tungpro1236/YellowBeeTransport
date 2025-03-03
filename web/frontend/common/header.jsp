@@ -59,20 +59,41 @@
 
                                     <% 
                                        String username = (String) session.getAttribute("username"); 
+                                       String role = (String) session.getAttribute("role"); 
                                     %>
 
                                     <% if (username == null) { %>
-                                    <!-- Hiển thị nút Login nếu chưa đăng nhập -->
+                                    <!-- Nếu chưa đăng nhập -->
                                     <div class="book_btn d-none d-lg-block">
                                         <a class="boxed-btn3-line" href="login">Login</a>
                                     </div>
                                     <% } else { %>
-                                    <!-- Hiển thị avatar nếu đã đăng nhập -->
+                                    <!-- Nếu đã đăng nhập -->
                                     <div class="user-avatar d-none d-lg-block dropdown">
                                         <button class="btn btn-warning dropdown-toggle" type="button" id="userDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                             <%= username.substring(0, 1).toUpperCase() %>
                                         </button>
                                         <div class="dropdown-menu" aria-labelledby="userDropdown">
+                                            <!-- Điều hướng dashboard theo role -->
+                                            <% if ("Admin".equalsIgnoreCase(role)) { %>
+                                            <a class="dropdown-item" href="Admin/dashboard">
+                                                <i class="fa fa-dashboard"></i> Dashboard
+                                            </a>
+                                            <% } else if ("SurveyStaff".equalsIgnoreCase(role)) { %>
+                                            <a class="dropdown-item" href="SurveyStaff/dashboard">
+                                                <i class="fa fa-dashboard"></i> Dashboard
+                                            </a>
+                                            <% } else if ("TransportStaff".equalsIgnoreCase(role)) { %>
+                                            <a class="dropdown-item" href="TransportStaff/dashboard">
+                                                <i class="fa fa-dashboard"></i> Dashboard
+                                            </a>
+                                            <% } else { %>
+                                            <a class="dropdown-item" href="customer/dashboad">
+                                                <i class="fa fa-home"></i> Dashboard
+                                            </a>
+                                            <% } %>
+
+                                            <!-- Profile & Logout -->
                                             <a class="dropdown-item profile-btn" href="profile.jsp">
                                                 <i class="fa fa-user"></i> Profile
                                             </a>
@@ -81,7 +102,7 @@
                                             </a>
                                         </div>
                                     </div>
-                                    <% } %> 
+                                    <% } %>
                                 </div>
                             </div>
                         </div>

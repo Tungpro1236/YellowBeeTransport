@@ -45,13 +45,14 @@ public class AccountsDAO extends DBContext {
             return null;
         }
     }
+
     public String getRoleByUsernameAndPassword(String username, String password) {
         String role = null;
-        String query = "SELECT r.RoleName " +
-                       "FROM Accounts a " +
-                       "JOIN Users u ON a.AccountID = u.AccountID " +
-                       "JOIN Roles r ON u.RoleID = r.RoleID " +
-                       "WHERE a.Username = ? AND a.Password = ? AND a.AccountStatusID = 1";
+        String query = "SELECT r.RoleName "
+                + "FROM Accounts a "
+                + "JOIN Users u ON a.AccountID = u.AccountID "
+                + "JOIN Roles r ON u.RoleID = r.RoleID "
+                + "WHERE a.Username = ? AND a.Password = ? AND a.AccountStatusID = 1";
 
         try {
             statement = connection.prepareStatement(query);
@@ -71,7 +72,7 @@ public class AccountsDAO extends DBContext {
     public static void main(String[] args) {
         // Khởi tạo đối tượng ServicesDAO
         AccountsDAO aDAO = new AccountsDAO();
-        
+
         Accounts acc = aDAO.getAccount("userI", "password123");
 
         // In kết quả để kiểm tra
@@ -80,5 +81,46 @@ public class AccountsDAO extends DBContext {
         } else {
             System.out.println("Không tìm thấy dịch vụ với ID: ");
         }
+    }
+
+    public Accounts getAccountById(int accountId) {
+        Accounts accounts = null;
+        String query = "SELECT * FROM Accounts WHERE AccountID = ?";
+
+        try {
+            statement = connection.prepareStatement(query);
+            statement.setInt(1, accountId);
+            result = statement.executeQuery();
+
+            if (result.next()) {
+                accounts = Accounts.builder()
+                        .AccountID(result.getInt("AccountID"))
+                        .Username(result.getString("Username"))
+                        .Password(result.getString("Password")) // Chỉ dùng nếu cần
+                        .AccountStatusID(result.getInt("AccountStatusID"))
+                        .build();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return accounts;
+    }
+    
+    public boolean isAccountActive(int accountID) {
+        String query = "SELECT AccountStatusID FROM Accounts WHERE AccountID = ?";
+
+        try {
+            PreparedStatement ps = connection.prepareStatement(query);
+            ps.setInt(1, accountID);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                int statusID = rs.getInt("AccountStatusID");
+                return statusID == 1; // Giả sử 1 là trạng thái 'Active'
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 }
