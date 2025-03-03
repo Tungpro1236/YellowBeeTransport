@@ -9,6 +9,8 @@ import Model.User;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -70,6 +72,73 @@ public class userDAO extends DBContext {
             e.printStackTrace();
         }
         return false;
+    }
+public List<User> getAllUsers() {
+        List<User> userList = new ArrayList<>();
+        String query = "SELECT u.UserID, u.FullName, u.Email, u.Phone, u.Address, " +
+                       "u.GenderID, u.Image, u.AccountID, a.Username, a.Password, " +
+                       "u.RoleID, r.RoleName " +
+                       "FROM Users u " +
+                       "JOIN Accounts a ON u.AccountID = a.AccountID " +
+                       "JOIN Roles r ON u.RoleID = r.RoleID";
+
+        try (PreparedStatement statement = connection.prepareStatement(query);
+             ResultSet resultSet = statement.executeQuery()) {
+
+            while (resultSet.next()) {
+                User user = User.builder()
+                        .userId(resultSet.getInt("UserID"))
+                        .fullName(resultSet.getString("FullName"))
+                        .email(resultSet.getString("Email"))
+                        .phone(resultSet.getString("Phone"))
+                        .address(resultSet.getString("Address"))
+                        .genderId(resultSet.getInt("GenderID"))
+                        .image(resultSet.getString("Image"))
+                        .accountId(resultSet.getInt("AccountID"))
+                        .roleId(resultSet.getInt("RoleID"))
+                        .roleName(resultSet.getString("RoleName"))
+                        .build();
+
+                userList.add(user);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return userList;
+    }
+
+   public User getUserById(int userId) {
+        User user = null;
+        String query = "SELECT u.UserID, u.FullName, u.Email, u.Phone, u.Address, " +
+                       "u.GenderID, u.Image, u.AccountID, a.Username, a.Password, " +
+                       "u.RoleID, r.RoleName " +
+                       "FROM Users u " +
+                       "JOIN Accounts a ON u.AccountID = a.AccountID " +
+                       "JOIN Roles r ON u.RoleID = r.RoleID " +
+                       "WHERE u.UserID = ?";
+
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setInt(1, userId);
+            ResultSet resultSet = statement.executeQuery();
+
+            if (resultSet.next()) {
+                user = User.builder()
+                        .userId(resultSet.getInt("UserID"))
+                        .fullName(resultSet.getString("FullName"))
+                        .email(resultSet.getString("Email"))
+                        .phone(resultSet.getString("Phone"))
+                        .address(resultSet.getString("Address"))
+                        .genderId(resultSet.getInt("GenderID"))
+                        .image(resultSet.getString("Image"))
+                        .accountId(resultSet.getInt("AccountID"))
+                        .roleId(resultSet.getInt("RoleID"))
+                        .roleName(resultSet.getString("RoleName"))
+                        .build();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return user;
     }
 
 }
