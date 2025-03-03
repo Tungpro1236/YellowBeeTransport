@@ -81,4 +81,27 @@ public class AccountsDAO extends DBContext {
             System.out.println("Không tìm thấy dịch vụ với ID: ");
         }
     }
+
+      public Accounts getAccountById(int accountId) {
+    Accounts accounts = null;
+    String query = "SELECT * FROM Accounts WHERE AccountID = ?";
+
+    try {
+        statement = connection.prepareStatement(query);
+        statement.setInt(1, accountId);
+        result = statement.executeQuery();
+
+        if (result.next()) {
+            accounts = Accounts.builder()
+                .AccountID(result.getInt("AccountID"))
+                .Username(result.getString("Username"))
+                .Password(result.getString("Password")) // Chỉ dùng nếu cần
+                .AccountStatusID(result.getInt("AccountStatusID"))
+                .build();
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return accounts;
+}
 }
