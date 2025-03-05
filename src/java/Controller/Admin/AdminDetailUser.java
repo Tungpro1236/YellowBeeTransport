@@ -14,6 +14,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 /**
  *
@@ -23,7 +24,12 @@ public class AdminDetailUser extends HttpServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         int userId = Integer.parseInt(request.getParameter("id"));
-
+        HttpSession session = request.getSession();
+        String role = (String) session.getAttribute("role");
+        if (role == null || !role.equals("Admin")) {
+            request.getRequestDispatcher("/frontend/view/access_denied.jsp").forward(request, response);
+            return;
+        }
         UserDAO userDAO = new UserDAO();
         AccountsDAO aDAO = new AccountsDAO();
         User user = userDAO.getUserById(userId); // Lấy user từ DB

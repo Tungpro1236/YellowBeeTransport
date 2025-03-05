@@ -1,8 +1,14 @@
 <%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page import="java.util.List" %>
 <%@ page import="Model.User" %>
+<%@ page import="Model.Roles" %>
 <%
     List<User> userList = (List<User>) request.getAttribute("userList");
+    List<Roles> roleList = (List<Roles>) request.getAttribute("roleList");
+    String searchQuery = (String) request.getAttribute("searchQuery");
+    Integer selectedRole = request.getAttribute("roleFilter") instanceof Integer
+                           ? (Integer) request.getAttribute("roleFilter")
+                           : null;
 %>
 <!DOCTYPE html>
 <html>
@@ -36,86 +42,116 @@
     </head>
     <body>
 
-        <jsp:include page="/frontend/common/header.jsp" />
+    <jsp:include page="/frontend/common/header.jsp" />
 
-        <div class="container-fluid mt-3">
-            <div class="row">
-                <!-- Taskbar (col-3) -->
-                <div class="col-md-2">
+    <div class="container-fluid mt-3">
+         <div class="row">
+                <div class="col-md-3">
                     <jsp:include page="/frontend/common/admin_taskbar.jsp" />
                 </div>
 
-                <!-- Nội dung chính (col-9) -->
-                <div class="col-md-10">
+                <div class="col-md-9">
                     <div class="container mt-3">
-                        <h2>All Users</h2>
-                        <table class="table table-bordered">
-                            <thead>
-                                <tr>
-                                    <th>User ID</th>
-                                    <th>Full Name</th>
-                                    <th>Email</th>
-                                    <th>Phone</th>
-                                    <th>Address</th>
-                                    <th>Gender</th>
-                                    <th>Role<th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <% for (User user : userList) { %>
-                                <tr>
-                                    <td><%= user.getUserId() %></td>
-                                    <td><%= user.getFullName() %></td>
-                                    <td><%= user.getEmail() %></td>
-                                    <td><%= user.getPhone() %></td>
-                                    <td><%= user.getAddress() %></td>
-                                    <td><%= user.getGender() %></td> 
-                                    <td><%= user.getRoleName() %></td>
-                                    <td>
-                                        <a href="admin_userdetail?id=<%= user.getUserId() %>">Detail</a> |
-                                        <a href="editUser.jsp?id=<%= user.getUserId() %>">Edit</a> |
-                                        <a href="deleteUser?id=<%= user.getUserId() %>" onclick="return confirm('Are you sure?')">Delete</a>
-                                    </td>
-                                </tr>
-                                <% } %>
-                            </tbody>
-                        </table>
-                    </div>
+                    <h2>All Users</h2>
+
+                    <form action="admin_user" method="POST" class="mb-3">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <input type="text" name="search" class="form-control" 
+                                       placeholder="Search by name..." 
+                                       value="<%= searchQuery != null ? searchQuery : "" %>">
+                            </div>
+                            <div class="col-md-3">
+                                <select name="roleFilter" class="form-control">
+                                    <option value="">All Roles</option>
+                                    <% if (roleList != null) {
+                                        for (Roles roleObj : roleList) { %>
+                                    <option value="<%= roleObj.getRoleID() %>"
+                                            <% if (selectedRole != null && roleObj.getRoleID() == selectedRole) { %>
+                                            selected
+                                            <% } %>>
+                                        <%= roleObj.getRoleName() %>
+                                    </option>
+                                    <% } } %>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <button type="submit" class="btn btn-primary">Search</button>
+                            </div>
+                        </div>
+                    </form>
+
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>User ID</th>
+                                <th>Full Name</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Address</th>
+                                <th>Gender</th>
+                                <th>Role</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% if (userList != null && !userList.isEmpty()) {
+                                for (User user : userList) { %>
+                            <tr>
+                                <td><%= user.getUserId() %></td>
+                                <td><%= user.getFullName() %></td>
+                                <td><%= user.getEmail() %></td>
+                                <td><%= user.getPhone() %></td>
+                                <td><%= user.getAddress() %></td>
+                                <td><%= user.getGender() %></td> 
+                                <td><%= user.getRoleName() %></td>
+                                <td>
+                                    <a href="admin_userdetail?id=<%= user.getUserId() %>" class="btn btn-info btn-sm">Detail</a>
+                                </td>
+                            </tr>
+                            <% } } else { %>
+                            <tr>
+                                <td colspan="8" class="text-center">No users found</td>
+                            </tr>
+                            <% } %>
+                        </tbody>
+                    </table>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <jsp:include page="/frontend/common/footer.jsp" />
+        <script src="js/vendor/modernizr-3.5.0.min.js"></script>
+        <script src="js/vendor/jquery-1.12.4.min.js"></script>
+        <script src="js/popper.min.js"></script>
+        <script src="js/bootstrap.min.js"></script>
+        <script src="js/owl.carousel.min.js"></script>
+        <script src="js/isotope.pkgd.min.js"></script>
+        <script src="js/ajax-form.js"></script>
+        <script src="js/waypoints.min.js"></script>
+        <script src="js/jquery.counterup.min.js"></script>
+        <script src="js/imagesloaded.pkgd.min.js"></script>
+        <script src="js/scrollIt.js"></script>
+        <script src="js/jquery.scrollUp.min.js"></script>
+        <script src="js/wow.min.js"></script>
+        <script src="js/nice-select.min.js"></script>
+        <script src="js/jquery.slicknav.min.js"></script>
+        <script src="js/jquery.magnific-popup.min.js"></script>
+        <script src="js/plugins.js"></script>
+        <!-- <script src="js/gijgo.min.js"></script> -->
+        <script src="js/slick.min.js"></script>
 
 
-            <jsp:include page="/frontend/common/footer.jsp" />
-            <script src="js/vendor/modernizr-3.5.0.min.js"></script>
-            <script src="js/vendor/jquery-1.12.4.min.js"></script>
-            <script src="js/popper.min.js"></script>
-            <script src="js/bootstrap.min.js"></script>
-            <script src="js/owl.carousel.min.js"></script>
-            <script src="js/isotope.pkgd.min.js"></script>
-            <script src="js/ajax-form.js"></script>
-            <script src="js/waypoints.min.js"></script>
-            <script src="js/jquery.counterup.min.js"></script>
-            <script src="js/imagesloaded.pkgd.min.js"></script>
-            <script src="js/scrollIt.js"></script>
-            <script src="js/jquery.scrollUp.min.js"></script>
-            <script src="js/wow.min.js"></script>
-            <script src="js/nice-select.min.js"></script>
-            <script src="js/jquery.slicknav.min.js"></script>
-            <script src="js/jquery.magnific-popup.min.js"></script>
-            <script src="js/plugins.js"></script>
-            <!-- <script src="js/gijgo.min.js"></script> -->
-            <script src="js/slick.min.js"></script>
+
+        <!--contact js-->
+        <script src="js/contact.js"></script>
+        <script src="js/jquery.ajaxchimp.min.js"></script>
+        <script src="js/jquery.form.js"></script>
+        <script src="js/jquery.validate.min.js"></script>
+        <script src="js/mail-script.js"></script>
 
 
-
-            <!--contact js-->
-            <script src="js/contact.js"></script>
-            <script src="js/jquery.ajaxchimp.min.js"></script>
-            <script src="js/jquery.form.js"></script>
-            <script src="js/jquery.validate.min.js"></script>
-            <script src="js/mail-script.js"></script>
-
-
-            <script src="js/main.js"></script>
+        <script src="js/main.js"></script>
     </body>
 </html>

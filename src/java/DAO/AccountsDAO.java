@@ -11,6 +11,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class AccountsDAO extends DBContext {
@@ -105,7 +106,7 @@ public class AccountsDAO extends DBContext {
         }
         return accounts;
     }
-    
+
     public boolean isAccountActive(int accountID) {
         String query = "SELECT AccountStatusID FROM Accounts WHERE AccountID = ?";
 
@@ -123,4 +124,108 @@ public class AccountsDAO extends DBContext {
         }
         return false;
     }
+
+    public List<Accounts> getAllAccounts() {
+        List<Accounts> accountList = new ArrayList<>();
+        String query = "SELECT a.AccountID, a.Username, a.Password, s.Description , u.FullName "
+                + "FROM Accounts a "
+                + "JOIN AccountStatus s ON a.AccountStatusID = s.AccountStatusID "
+                + "LEFT JOIN Users u ON a.AccountID = u.AccountID where a.AccountStatusID = 1";
+
+        try (PreparedStatement statement = connection.prepareStatement(query); ResultSet resultSet = statement.executeQuery()) {
+
+            while (resultSet.next()) {
+                Accounts account = Accounts.builder()
+                        .AccountID(resultSet.getInt("AccountID"))
+                        .Username(resultSet.getString("Username"))
+                        .Password(resultSet.getString("Password")) // Chỉ dùng nếu cần
+                        .Description(resultSet.getString("Description")) // Lấy tên trạng thái
+                        .FullName(resultSet.getString("FullName")) // Lấy tên người dùng (có thể NULL)
+                        .build();
+                accountList.add(account);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return accountList;
+    }
+
+    public boolean deleteAccount(int accountId) {
+        String query = "UPDATE Accounts SET AccountStatusID = 2 WHERE AccountID = ? AND AccountStatusID = 1";
+        try {
+            statement = connection.prepareStatement(query);
+            statement.setInt(1, accountId);
+            int rowsUpdated = statement.executeUpdate();
+            return rowsUpdated > 0; // Trả về true nếu có ít nhất một dòng bị ảnh hưởng
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public Accounts getAccountDashboard(String username, String password) {
+        Accounts accounts = null;
+        String query = "SELECT a.*, r.RoleName FROM Accounts a "
+                + "JOIN Roles r ON a.RoleID = r.RoleID "
+                + "WHERE a.Username = ? AND a.Password = ? AND a.AccountStatusID = 1";
+
+        try {
+            statement = connection.prepareStatement(query);
+            statement.setString(1, username);
+            statement.setString(2, password);
+            result = statement.executeQuery();
+
+            // Lấy dữ liệu tài khoản từ database
+            while (result.next()) {
+                int AccountID = result.getInt("AccountID");
+                String Username = result.getString("Username");
+                String Password = result.getString("Password");
+                int AccountStatusID = result.getInt("AccountStatusID");
+                String Role = result.getString("RoleName"); // Lấy role từ bảng Roles
+
+                // Xây dựng đối tượng Accounts
+                accounts = Accounts.builder()
+                        .AccountID(AccountID)
+                        .Username(Username)
+                        .Password(Password)
+                        .AccountStatusID(AccountStatusID)
+                        .Role(Role) // Gán Role vào đối tượng
+                        .build();
+            }
+            return accounts;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public List<Accounts> getAllAccountsDashboard() {
+        List<Accounts> accountList = new ArrayList<>();
+        String query = "SELECT a.AccountID, a.Username, a.Password, s.Description, \n"
+                + "       u.FullName, r.RoleName \n"
+                + "FROM Accounts a\n"
+                + "JOIN AccountStatus s ON a.AccountStatusID = s.AccountStatusID\n"
+                + "JOIN Users u ON a.AccountID = u.AccountID  \n"
+                + "LEFT JOIN Roles r ON u.RoleID = r.RoleID  \n"
+                + "WHERE a.AccountStatusID = 1;";
+
+        try (PreparedStatement statement = connection.prepareStatement(query); ResultSet resultSet = statement.executeQuery()) {
+
+            while (resultSet.next()) {
+                Accounts account = Accounts.builder()
+                        .AccountID(resultSet.getInt("AccountID"))
+                        .Username(resultSet.getString("Username"))
+                        .Password(resultSet.getString("Password")) // Chỉ dùng nếu cần
+                        .Description(resultSet.getString("Description")) // Lấy trạng thái tài khoản
+                        .FullName(resultSet.getString("FullName")) // Lấy tên người dùng (có thể NULL)
+                        .Role(resultSet.getString("RoleName")) // Lấy Role của tài khoản
+                        .build();
+                accountList.add(account);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return accountList;
+    }
+
 }

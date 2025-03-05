@@ -76,7 +76,7 @@
                                         <div class="dropdown-menu" aria-labelledby="userDropdown">
                                             <!-- Điều hướng dashboard theo role -->
                                             <% if ("Admin".equalsIgnoreCase(role)) { %>
-                                            <a class="dropdown-item" href="Admin/dashboard">
+                                            <a class="dropdown-item" href="admin_dashboard">
                                                 <i class="fa fa-dashboard"></i> Dashboard
                                             </a>
                                             <% } else if ("SurveyStaff".equalsIgnoreCase(role)) { %>

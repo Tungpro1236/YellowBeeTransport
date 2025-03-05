@@ -72,6 +72,10 @@
         <servlet-name>AdminDetailUser</servlet-name>
         <servlet-class>Controller.Admin.AdminDetailUser</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>AdminManageAccounts</servlet-name>
+        <servlet-class>Controller.Admin.AdminManageAccounts</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>HomePageServlet</servlet-name>
         <url-pattern>/homepage</url-pattern>
@@ -124,6 +128,10 @@
         <servlet-name>SubmitQuoteController</servlet-name>
         <url-pattern>/submitQuote</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>AdminManageAccounts</servlet-name>
+        <url-pattern>/admin_accounts</url-pattern>
+    </servlet-mapping>
     <welcome-file-list>
         <welcome-file>homepage</welcome-file>
     </welcome-file-list>
@@ -139,5 +147,4 @@
         <servlet-name>AdminDetailUser</servlet-name>
         <url-pattern>/admin_userdetail</url-pattern>
     </servlet-mapping>
-
 </web-app>

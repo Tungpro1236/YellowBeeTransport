@@ -1,11 +1,8 @@
 <%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page import="java.util.List" %>
-<%@ page import="Model.User" %>
 <%@ page import="Model.Accounts" %>
-<%@ page import="java.util.*" %>
-
 <%
-     User user = (User) request.getAttribute("user");
+    List<Accounts> accountList = (List<Accounts>) request.getAttribute("accountList");
 %>
 <!DOCTYPE html>
 <html>
@@ -36,16 +33,6 @@
 
         <link rel="stylesheet" href="css/style.css">
         <!-- <link rel="stylesheet" href="css/responsive.css"> -->
-        <style>
-            .user-image {
-                width: 100%;        
-                height: 200px;      
-                object-fit: cover;  
-                border-radius: 8px; 
-                display: block;     
-                margin: 0 auto;     
-            }
-        </style>
     </head>
     <body>
 
@@ -53,44 +40,57 @@
 
         <div class="container-fluid mt-3">
             <div class="row">
-                <!-- Taskbar (col-3) -->
                 <div class="col-md-3">
                     <jsp:include page="/frontend/common/admin_taskbar.jsp" />
                 </div>
 
-                <!-- Nội dung chính (col-9) -->
                 <div class="col-md-9">
                     <div class="container mt-3">
-                        <% if (user != null) { %>
-                        <h2>User Details</h2>
-                        <div class="container">
-                            <div class="row"> 
-                                <div class="col-md-3 text-center">
-                                    <img src="<%= user.getImage() %>" alt="User Image" class="user-image">
-                                </div>
+                        <h2>All Accounts</h2>
 
-                                <div class =" col-md-9">
-                                    <table class="info-table">
-                                        <tr><th>User ID:</th><td><%= user.getUserId() %></td></tr>
-                                        <tr><th>Full Name:</th><td><%= user.getFullName() %></td></tr>
-                                        <tr><th>Email:</th><td><%= user.getEmail() %></td></tr>
-                                        <tr><th>Phone:</th><td><%= user.getPhone() %></td></tr>
-                                        <tr><th>Address:</th><td><%= user.getAddress() %></td></tr>
-                                        <tr><th>Gender:</th><td><%= (user.getGenderId() == 1 ? "Male" : "Female") %></td></tr>
-                                        <tr><th>Role:</th><td><%= user.getRoleName() %></td></tr>
-                                    </table>
-                                </div
-                            </div>
-                        </div>
-                        <% } else { %>
-                        <h2>User not found!</h2>
-                        <% } %>
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Account ID</th>
+                                    <th>Username</th>
+                                    <th>Status</th>
+                                    <th>User Name</th>
+                                    <th>Role</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% if (accountList != null && !accountList.isEmpty()) { 
+                                    for (Accounts accounts : accountList) { %>
+                                <tr>
+                                    <td><%= accounts.getAccountID() %></td>
+                                    <td><%= accounts.getUsername() %></td>
+                                    <td><%= accounts.getDescription() %></td>
+                                    <td><%= accounts.getFullName() %></td>
+                                    <td><%= accounts.getRole() %></td> 
 
-                        <a href="admin_user">Back to User List</a>
+                                    <td>
+                                        <a href="admin_userdetail?id=<%= accounts.getAccountID() %>" class="btn btn-info btn-sm">Detail</a>
+                                        <form action="admin_accounts" method="post" style="display:inline;">
+                                            <input type="hidden" name="accountId" value="<%= accounts.getAccountID() %>">
+                                            <button type="submit" name="action" value="delete" 
+                                                    class="btn btn-danger btn-sm"
+                                                    onclick="return confirm('Are you sure you want to delete this account?');">
+                                                Delete
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                <% } } else { %>
+                                <tr>
+                                    <td colspan="6" class="text-center">No accounts found.</td>
+                                </tr>
+                                <% } %>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
-
 
             <jsp:include page="/frontend/common/footer.jsp" />
             <script src="js/vendor/modernizr-3.5.0.min.js"></script>

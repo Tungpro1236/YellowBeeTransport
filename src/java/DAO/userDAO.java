@@ -137,4 +137,101 @@ public class UserDAO extends DBContext {
         return user;
     }
 
+    public User updateUser(User user) {
+        String query = "UPDATE Users SET FullName = ?, Email = ?, Phone = ?, Address = ?, "
+                + "GenderID = ?, Image = ?, RoleID = ? WHERE UserID = ?";
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, user.getFullName());
+            statement.setString(2, user.getEmail());
+            statement.setString(3, user.getPhone());
+            statement.setString(4, user.getAddress());
+            statement.setInt(5, user.getGenderId());
+            statement.setString(6, user.getImage());
+            statement.setInt(7, user.getRoleId());
+            statement.setInt(8, user.getUserId());
+
+            int rowsUpdated = statement.executeUpdate();
+
+            // Nếu cập nhật thành công, lấy lại thông tin user vừa sửa
+            if (rowsUpdated > 0) {
+                return getUserById(user.getUserId());
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null; // Trả về null nếu cập nhật thất bại
+    }
+
+    public List<User> searchUserByName(String name) {
+        List<User> userList = new ArrayList<>();
+        String query = "SELECT u.UserID, u.FullName, u.Email, u.Phone, u.Address, "
+                + "u.GenderID, u.Image, u.AccountID, a.Username, a.Password, "
+                + "u.RoleID, r.RoleName "
+                + "FROM Users u "
+                + "JOIN Accounts a ON u.AccountID = a.AccountID "
+                + "JOIN Roles r ON u.RoleID = r.RoleID "
+                + "WHERE u.FullName LIKE ?";
+
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, "%" + name + "%");  // Tìm kiếm gần đúng theo tên
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    User user = User.builder()
+                            .userId(resultSet.getInt("UserID"))
+                            .fullName(resultSet.getString("FullName"))
+                            .email(resultSet.getString("Email"))
+                            .phone(resultSet.getString("Phone"))
+                            .address(resultSet.getString("Address"))
+                            .genderId(resultSet.getInt("GenderID"))
+                            .image(resultSet.getString("Image"))
+                            .accountId(resultSet.getInt("AccountID"))
+                            .roleId(resultSet.getInt("RoleID"))
+                            .roleName(resultSet.getString("RoleName"))
+                            .build();
+
+                    userList.add(user);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return userList;
+    }
+public List<User> getUsersByRole(int roleId) {
+    List<User> userList = new ArrayList<>();
+    String query = "SELECT u.UserID, u.FullName, u.Email, u.Phone, u.Address, "
+            + "u.GenderID, u.Image, u.AccountID, a.Username, a.Password, "
+            + "u.RoleID, r.RoleName "
+            + "FROM Users u "
+            + "JOIN Accounts a ON u.AccountID = a.AccountID "
+            + "JOIN Roles r ON u.RoleID = r.RoleID "
+            + "WHERE u.RoleID = ?";
+
+    try (PreparedStatement statement = connection.prepareStatement(query)) {
+        statement.setInt(1, roleId);
+
+        try (ResultSet resultSet = statement.executeQuery()) {
+            while (resultSet.next()) {
+                User user = User.builder()
+                        .userId(resultSet.getInt("UserID"))
+                        .fullName(resultSet.getString("FullName"))
+                        .email(resultSet.getString("Email"))
+                        .phone(resultSet.getString("Phone"))
+                        .address(resultSet.getString("Address"))
+                        .genderId(resultSet.getInt("GenderID"))
+                        .image(resultSet.getString("Image"))
+                        .accountId(resultSet.getInt("AccountID"))
+                        .roleId(resultSet.getInt("RoleID"))
+                        .roleName(resultSet.getString("RoleName"))
+                        .build();
+
+                userList.add(user);
+            }
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return userList;
+}
+
 }
