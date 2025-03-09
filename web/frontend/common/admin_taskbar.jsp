@@ -10,7 +10,7 @@
         <li><a href="${pageContext.request.contextPath}/admin_dashboard">Dashboard</a></li>
         <li><a href="${pageContext.request.contextPath}/admin_user">Manage User</a></li>
         <li><a href="${pageContext.request.contextPath}/admin_accounts">Manage Accounts</a></li>
-        <li><a href="${pageContext.request.contextPath}/ManageContracts">Manage Price</a></li>
+        <li><a href="${pageContext.request.contextPath}/admin_price">Manage Price</a></li>
     </ul>
 </div>
 

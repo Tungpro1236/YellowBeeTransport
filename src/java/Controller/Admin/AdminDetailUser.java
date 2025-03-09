@@ -23,6 +23,7 @@ import jakarta.servlet.http.HttpSession;
 public class AdminDetailUser extends HttpServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        
         int userId = Integer.parseInt(request.getParameter("id"));
         HttpSession session = request.getSession();
         String role = (String) session.getAttribute("role");
