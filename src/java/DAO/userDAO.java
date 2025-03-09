@@ -68,12 +68,13 @@ public class UserDAO extends DBContext {
 
     public List<User> getAllUsers() {
         List<User> userList = new ArrayList<>();
-        String query = "SELECT u.UserID, u.FullName, u.Email, u.Phone, u.Address, "
-                + "u.GenderID, u.Image, u.AccountID, a.Username, a.Password, "
-                + "u.RoleID, r.RoleName "
-                + "FROM Users u "
-                + "JOIN Accounts a ON u.AccountID = a.AccountID "
-                + "JOIN Roles r ON u.RoleID = r.RoleID";
+        String query = "SELECT u.UserID, u.FullName, u.Email, u.Phone, u.Address, \n"
+                + "       u.GenderID, u.Image, u.AccountID, a.Username, a.Password, \n"
+                + "       u.RoleID, r.RoleName \n"
+                + "FROM Users u \n"
+                + "JOIN Accounts a ON u.AccountID = a.AccountID \n"
+                + "JOIN Roles r ON u.RoleID = r.RoleID \n"
+                + "WHERE a.AccountStatusID = 1;";
 
         try (PreparedStatement statement = connection.prepareStatement(query); ResultSet resultSet = statement.executeQuery()) {
 
@@ -193,41 +194,62 @@ public class UserDAO extends DBContext {
         }
         return userList;
     }
-public List<User> getUsersByRole(int roleId) {
-    List<User> userList = new ArrayList<>();
-    String query = "SELECT u.UserID, u.FullName, u.Email, u.Phone, u.Address, "
-            + "u.GenderID, u.Image, u.AccountID, a.Username, a.Password, "
-            + "u.RoleID, r.RoleName "
-            + "FROM Users u "
-            + "JOIN Accounts a ON u.AccountID = a.AccountID "
-            + "JOIN Roles r ON u.RoleID = r.RoleID "
-            + "WHERE u.RoleID = ?";
 
-    try (PreparedStatement statement = connection.prepareStatement(query)) {
-        statement.setInt(1, roleId);
+    public List<User> getUsersByRole(int roleId) {
+        List<User> userList = new ArrayList<>();
+        String query = "SELECT u.UserID, u.FullName, u.Email, u.Phone, u.Address, "
+                + "u.GenderID, u.Image, u.AccountID, a.Username, a.Password, "
+                + "u.RoleID, r.RoleName "
+                + "FROM Users u "
+                + "JOIN Accounts a ON u.AccountID = a.AccountID "
+                + "JOIN Roles r ON u.RoleID = r.RoleID "
+                + "WHERE u.RoleID = ?";
 
-        try (ResultSet resultSet = statement.executeQuery()) {
-            while (resultSet.next()) {
-                User user = User.builder()
-                        .userId(resultSet.getInt("UserID"))
-                        .fullName(resultSet.getString("FullName"))
-                        .email(resultSet.getString("Email"))
-                        .phone(resultSet.getString("Phone"))
-                        .address(resultSet.getString("Address"))
-                        .genderId(resultSet.getInt("GenderID"))
-                        .image(resultSet.getString("Image"))
-                        .accountId(resultSet.getInt("AccountID"))
-                        .roleId(resultSet.getInt("RoleID"))
-                        .roleName(resultSet.getString("RoleName"))
-                        .build();
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setInt(1, roleId);
 
-                userList.add(user);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    User user = User.builder()
+                            .userId(resultSet.getInt("UserID"))
+                            .fullName(resultSet.getString("FullName"))
+                            .email(resultSet.getString("Email"))
+                            .phone(resultSet.getString("Phone"))
+                            .address(resultSet.getString("Address"))
+                            .genderId(resultSet.getInt("GenderID"))
+                            .image(resultSet.getString("Image"))
+                            .accountId(resultSet.getInt("AccountID"))
+                            .roleId(resultSet.getInt("RoleID"))
+                            .roleName(resultSet.getString("RoleName"))
+                            .build();
+
+                    userList.add(user);
+                }
             }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-    } catch (SQLException e) {
-        e.printStackTrace();
+        return userList;
     }
-    return userList;
-}
 
+    public boolean addUser(String fullName, String email, String phone, String address, int genderId,
+            String image, int accountId, int roleId) {
+        String query = "INSERT INTO Users (FullName, Email, Phone, Address, GenderID, Image, AccountID, RoleID) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, fullName);
+            statement.setString(2, email);
+            statement.setString(3, phone);
+            statement.setString(4, address);
+            statement.setInt(5, genderId);
+            statement.setString(6, image);
+            statement.setInt(7, accountId);
+            statement.setInt(8, roleId);
+
+            int rowsInserted = statement.executeUpdate();
+            return rowsInserted > 0; // Trả về true nếu có hàng được thêm
+        } catch (SQLException e) {
+            System.err.println("Lỗi khi thêm người dùng: " + e.getMessage());
+            return false;
+        }
+    }
 }

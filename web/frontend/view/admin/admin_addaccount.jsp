@@ -42,7 +42,7 @@
                             </div>
                         <% } %>
 
-                        <form action="admin_addaccount" method="post">
+                        <form action="admin_addaccounts" method="post">
                             <div class="form-group">
                                 <label>Username:</label>
                                 <input type="text" name="username" class="form-control" required>
