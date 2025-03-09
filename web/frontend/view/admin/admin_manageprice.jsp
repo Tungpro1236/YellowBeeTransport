@@ -58,43 +58,63 @@
     <body>
 
         <jsp:include page="/frontend/common/header.jsp" />
+        <div class="container-fluid mt-3">
+            <div class="row">
+                <div class="col-md-3">
+                    <jsp:include page="/frontend/common/admin_taskbar.jsp" />
+                </div>
 
-        <div class="container">
-            <h3 class="text-center mt-4">Removal Price</h3>
+                <div class="col-md-9">
+                    <div class="container mt-3">
+                        <h2>Removal Price</h2>
+                        <a href="admin_addprice" class="btn btn-info btn-sm">Add Price</a>
+                        <% String error = (String) request.getAttribute("error"); %>
+                        <% if (error != null) { %>
+                        <p class="text-center text-danger"><%= error %></p>
+                        <% } else { %>
 
-            <% String error = (String) request.getAttribute("error"); %>
-            <% if (error != null) { %>
-            <p class="text-center text-danger"><%= error %></p>
-            <% } else { %>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Describe</th>
+                                    <th>Price</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% 
+                                    List<PriceCost> listCost = (List<PriceCost>) request.getAttribute("listCost");
+                                    if (listCost != null) {
+                                        for (PriceCost item : listCost) { 
+                                %>
+                                <tr>
+                                    <td><%= item.getPriceCostID() %></td>
+                                    <td><%= item.getDescription() %></td>
+                                    <td><%= item.getCost() %></td>
+                                    <td>
+                                        <a href="admin_updateprice?priceCostID=<%= item.getPriceCostID() %>" class="btn btn-info btn-sm">Edit</a>
+                                        <form action="admin_price" method="post" style="display:inline;">
+                                            <input type="hidden" name="priceCostID" value="<%= item.getPriceCostID() %>">
+                                            <button type="submit" name="action" value="delete" 
+                                                    class="btn btn-danger btn-sm"
+                                                    onclick="return confirm('Are you sure you want to delete this price cost?');">
+                                                Delete
+                                            </button>
+                                        </form>
+                                    </td>
 
-            <table>
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Describe</th>
-                        <th>Price</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <% 
-                        List<PriceCost> listCost = (List<PriceCost>) request.getAttribute("listCost");
-                        if (listCost != null) {
-                            for (PriceCost item : listCost) { 
-                    %>
-                    <tr>
-                        <td><%= item.getPriceCostID() %></td>
-                        <td><%= item.getDescription() %></td>
-                        <td><%= item.getCost() %></td>
-                    </tr>
-                    <% 
-                            }
-                        } 
-                    %>
-                </tbody>
-            </table>
-            <% } %>
+                                    <% 
+                                            }
+                                        } 
+                                    %>
+                            </tbody>
+                        </table>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
         </div>
-
         <jsp:include page="/frontend/common/footer.jsp" />
         <script src="js/vendor/modernizr-3.5.0.min.js"></script>
         <script src="js/vendor/jquery-1.12.4.min.js"></script>

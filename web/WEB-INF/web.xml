@@ -80,6 +80,14 @@
         <servlet-name>AdminAddAccounts</servlet-name>
         <servlet-class>Controller.Admin.AdminAddAccounts</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>AdminManagePrice</servlet-name>
+        <servlet-class>Controller.Admin.AdminManagePrice</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>AdminUpdatePrice</servlet-name>
+        <servlet-class>Controller.Admin.AdminUpdatePrice</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>HomePageServlet</servlet-name>
         <url-pattern>/homepage</url-pattern>
@@ -139,6 +147,14 @@
     <servlet-mapping>
         <servlet-name>AdminAddAccounts</servlet-name>
         <url-pattern>/admin_addaccounts</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>AdminManagePrice</servlet-name>
+        <url-pattern>/admin_price</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>AdminUpdatePrice</servlet-name>
+        <url-pattern>/admin_updateprice</url-pattern>
     </servlet-mapping>
     <welcome-file-list>
         <welcome-file>homepage</welcome-file>

@@ -1,6 +1,10 @@
 <%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page import="java.util.List" %>
+<%@ page import="DAO.PriceDAO" %>
 <%@ page import="Model.PriceCost" %>
+<%
+    PriceCost price = (PriceCost) request.getAttribute("price");
+%>
 <!DOCTYPE html>
 <html>
     <head>
@@ -58,44 +62,36 @@
     <body>
 
         <jsp:include page="/frontend/common/header.jsp" />
+        <div class="container-fluid mt-3">
+            <div class="row">
+                <div class="col-md-3">
+                    <jsp:include page="/frontend/common/admin_taskbar.jsp" />
+                </div>
 
-        <div class="container">
-            <h3 class="text-center mt-4">Removal Price</h3>
+                <div class="col-md-9">
+                    <div class="container mt-3">
+                        <h2>Edit Price</h2>
+                        <% if (request.getParameter("error") != null) { %>
+                        <div class="alert alert-danger">Update failed. Please try again.</div>
+                        <% } %>
+                        <form action="admin_updateprice" method="post">
+                            <label>ID:</label>
+                            <input type="text" name="priceCostID" value="<%= price.getPriceCostID() %>" readonly class="form-control mb-2"> 
 
-            <% String error = (String) request.getAttribute("error"); %>
-            <% if (error != null) { %>
-            <p class="text-center text-danger"><%= error %></p>
-            <% } else { %>
+                            <label>Description:</label>
+                            <input type="text" name="description" value="<%= price.getDescription() %>" required class="form-control mb-2"> 
 
-            <table>
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Describe</th>
-                        <th>Price</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <% 
-                        List<PriceCost> listCost = (List<PriceCost>) request.getAttribute("listCost");
-                        if (listCost != null) {
-                            for (PriceCost item : listCost) { 
-                    %>
-                    <tr>
-                        <td><%= item.getPriceCostID() %></td>
-                        <td><%= item.getDescription() %></td>
-                        <td><%= item.getCost() %></td>
-                    </tr>
-                    <% 
-                            }
-                        } 
-                    %>
-                </tbody>
-            </table>
-            <% } %>
+                            <label>Price:</label>
+                            <input type="number" name="cost" value="<%= price.getCost() %>" step="0.01" required class="form-control mb-2"> 
+
+                            <button type="submit" class="btn btn-primary">Update</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
         </div>
-
         <jsp:include page="/frontend/common/footer.jsp" />
+
         <script src="js/vendor/modernizr-3.5.0.min.js"></script>
         <script src="js/vendor/jquery-1.12.4.min.js"></script>
         <script src="js/popper.min.js"></script>
