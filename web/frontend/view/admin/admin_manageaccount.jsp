@@ -47,10 +47,7 @@
                 <div class="col-md-9">
                     <div class="container mt-3">
                         <h2>All Accounts</h2>
-<<<<<<< Updated upstream
-=======
-                        <a href="admin_addaccount" class="btn btn-info btn-sm">Add Account</a>
->>>>>>> Stashed changes
+                        <a href="admin_addaccounts" class="btn btn-info btn-sm">Add Account</a>
 
                         <table class="table table-bordered">
                             <thead>

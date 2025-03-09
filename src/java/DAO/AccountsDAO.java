@@ -1,4 +1,3 @@
-
 package DAO;
 
 import DBConnect.DBContext;
@@ -10,6 +9,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.sql.Statement;
 
 public class AccountsDAO extends DBContext {
 
@@ -224,5 +224,26 @@ public class AccountsDAO extends DBContext {
         }
         return accountList;
     }
+
+    public int addAccount(String username, String password, int status) {
+    String query = "INSERT INTO Accounts (Username, Password, AccountStatusID) VALUES (?, ?, ?)";
+    try (PreparedStatement statement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
+        statement.setString(1, username);
+        statement.setString(2, password);
+        statement.setInt(3, status);
+        int affectedRows = statement.executeUpdate();
+
+        if (affectedRows > 0) {
+            try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    return generatedKeys.getInt(1);
+                }
+            }
+        }
+    } catch (SQLException e) {
+        System.err.println("Lỗi khi thêm tài khoản: " + e.getMessage());
+    }
+    return -1; // Lỗi
+}
 
 }
