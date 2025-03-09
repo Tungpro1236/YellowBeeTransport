@@ -71,7 +71,7 @@
                                     <td><%= accounts.getRole() %></td> 
 
                                     <td>
-                                        <a href="admin_userdetail?id=<%= accounts.getAccountID() %>" class="btn btn-info btn-sm">Detail</a>
+                                        <!--<a href="admin_userdetail?id=<%= accounts.getAccountID() %>" class="btn btn-info btn-sm">Detail</a>-->
                                         <form action="admin_accounts" method="post" style="display:inline;">
                                             <input type="hidden" name="accountId" value="<%= accounts.getAccountID() %>">
                                             <button type="submit" name="action" value="delete" 

@@ -226,24 +226,38 @@ public class AccountsDAO extends DBContext {
     }
 
     public int addAccount(String username, String password, int status) {
-    String query = "INSERT INTO Accounts (Username, Password, AccountStatusID) VALUES (?, ?, ?)";
-    try (PreparedStatement statement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
-        statement.setString(1, username);
-        statement.setString(2, password);
-        statement.setInt(3, status);
-        int affectedRows = statement.executeUpdate();
+        String query = "INSERT INTO Accounts (Username, Password, AccountStatusID) VALUES (?, ?, ?)";
+        try (PreparedStatement statement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
+            statement.setString(1, username);
+            statement.setString(2, password);
+            statement.setInt(3, status);
+            int affectedRows = statement.executeUpdate();
 
-        if (affectedRows > 0) {
-            try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
-                if (generatedKeys.next()) {
-                    return generatedKeys.getInt(1);
+            if (affectedRows > 0) {
+                try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        return generatedKeys.getInt(1);
+                    }
                 }
             }
+        } catch (SQLException e) {
+            System.err.println("Lỗi khi thêm tài khoản: " + e.getMessage());
         }
-    } catch (SQLException e) {
-        System.err.println("Lỗi khi thêm tài khoản: " + e.getMessage());
+        return -1; // Lỗi
     }
-    return -1; // Lỗi
-}
 
+    public boolean isUsernameExist(String username) {
+        String sql = "SELECT COUNT(*) FROM Accounts WHERE Username = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, username);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next() && rs.getInt(1) > 0) {
+                    return true;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 }
