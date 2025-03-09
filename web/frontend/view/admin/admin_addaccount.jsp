@@ -4,10 +4,20 @@
 <%@ page import="Model.Roles" %>
 <%
     List<Roles> roleList = (List<Roles>) request.getAttribute("roleList");
-    String errorMessage = (String) request.getAttribute("errorMessage");
+    List<String> errors = (List<String>) request.getAttribute("errors");
     Integer selectedRole = request.getAttribute("roleFilter") instanceof Integer
                            ? (Integer) request.getAttribute("roleFilter")
                            : null;
+
+    String roleError = null;
+    if (errors != null) {
+        for (String error : errors) {
+            if (error.toLowerCase().contains("role")) {
+                roleError = error;
+                break;
+            }
+        }
+    }
 %>
 <!DOCTYPE html>
 <html>
@@ -15,7 +25,6 @@
         <meta charset="utf-8">
         <meta http-equiv="x-ua-compatible" content="ie=edge">
         <title>Yellow Bee Transport</title>
-        <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="shortcut icon" type="image/x-icon" href="img/logo_com.png">
         <link rel="stylesheet" href="css/bootstrap.min.css">
@@ -35,17 +44,24 @@
                     <div class="main-content p-3">
                         <h3>Create New Account</h3>
 
-                        <%-- Hiển thị lỗi nếu có --%>
-                        <% if (errorMessage != null) { %>
+                        <%-- Hiển thị lỗi chung --%>
+                        <% if (errors != null && !errors.isEmpty()) { %>
                             <div class="alert alert-danger">
-                                <%= errorMessage %>
+                                <ul>
+                                    <% for (String error : errors) { %>
+                                        <% if (!error.toLowerCase().contains("role")) { %>
+                                            <li><%= error %></li>
+                                        <% } %>
+                                    <% } %>
+                                </ul>
                             </div>
                         <% } %>
 
                         <form action="admin_addaccounts" method="post">
                             <div class="form-group">
                                 <label>Username:</label>
-                                <input type="text" name="username" class="form-control" required>
+                                <input type="text" name="username" class="form-control" 
+                                       value="<%= request.getAttribute("username") != null ? request.getAttribute("username") : "" %>" required>
                             </div>
 
                             <div class="form-group">
@@ -55,41 +71,46 @@
 
                             <div class="form-group">
                                 <label>Full Name:</label>
-                                <input type="text" name="fullName" class="form-control" required>
+                                <input type="text" name="fullName" class="form-control" 
+                                       value="<%= request.getAttribute("fullName") != null ? request.getAttribute("fullName") : "" %>" required>
                             </div>
 
                             <div class="form-group">
                                 <label>Email:</label>
-                                <input type="email" name="email" class="form-control" required>
+                                <input type="email" name="email" class="form-control" 
+                                       value="<%= request.getAttribute("email") != null ? request.getAttribute("email") : "" %>" required>
                             </div>
 
                             <div class="form-group">
                                 <label>Phone:</label>
-                                <input type="text" name="phone" class="form-control" required>
+                                <input type="text" name="phone" class="form-control" 
+                                       value="<%= request.getAttribute("phone") != null ? request.getAttribute("phone") : "" %>" required>
                             </div>
 
                             <div class="form-group">
                                 <label>Address:</label>
-                                <input type="text" name="address" class="form-control" required>
+                                <input type="text" name="address" class="form-control" 
+                                       value="<%= request.getAttribute("address") != null ? request.getAttribute("address") : "" %>" required>
                             </div>
 
                             <div class="form-group">
                                 <label>Gender:</label>
                                 <select name="gender" class="form-control">
-                                    <option value="1">Male</option>
-                                    <option value="2">Female</option>
+                                    <option value="1" <% if ("1".equals(request.getAttribute("gender"))) { %> selected <% } %>>Male</option>
+                                    <option value="2" <% if ("2".equals(request.getAttribute("gender"))) { %> selected <% } %>>Female</option>
                                 </select>
                             </div>
 
                             <div class="form-group">
                                 <label>Profile Image:</label>
-                                <input type="text" name="image" class="form-control">
+                                <input type="text" name="image" class="form-control" 
+                                       value="<%= request.getAttribute("image") != null ? request.getAttribute("image") : "" %>"required>
                             </div>
 
                             <div class="form-group">
                                 <label>Role:</label>
                                 <select name="roleFilter" class="form-control">
-                                    <option value="">All Roles</option>
+                                    
                                     <% if (roleList != null) {
                                         for (Roles roleObj : roleList) { %>
                                     <option value="<%= roleObj.getRoleID() %>"
@@ -100,6 +121,9 @@
                                     </option>
                                     <% } } %>
                                 </select>
+                                <% if (roleError != null) { %>
+                                    <span class="text-danger"><%= roleError %></span>
+                                <% } %>
                             </div>
 
                             <button type="submit" class="btn btn-primary">Register</button>

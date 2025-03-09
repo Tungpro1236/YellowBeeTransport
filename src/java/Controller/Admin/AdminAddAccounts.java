@@ -1,27 +1,18 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
- */
 package Controller.Admin;
 
 import DAO.AccountsDAO;
 import DAO.RoleDAO;
 import DAO.UserDAO;
 import Model.Roles;
-import Model.User;
+import Utils.Validation;
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
-import java.util.List;
 
-/**
- *
- * @author nguye
- */
 public class AdminAddAccounts extends HttpServlet {
 
     @Override
@@ -33,12 +24,12 @@ public class AdminAddAccounts extends HttpServlet {
         request.getRequestDispatcher("/frontend/view/admin/admin_addaccount.jsp").forward(request, response);
     }
 
-   @Override
+    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         List<String> errors = new ArrayList<>();
 
-        // Lấy dữ liệu từ form
+        // Retrieve form data
         String roleFilter = request.getParameter("roleFilter");
         String username = request.getParameter("username");
         String password = request.getParameter("password");
@@ -49,34 +40,54 @@ public class AdminAddAccounts extends HttpServlet {
         String image = request.getParameter("image");
         String genderParam = request.getParameter("gender");
 
-        // Kiểm tra dữ liệu đầu vào
+        // Validate input data
         if (roleFilter == null || roleFilter.isEmpty()) {
-            errors.add("Vui lòng chọn vai trò.");
+            errors.add("Please select a role.");
         }
-        if (username == null || username.isEmpty()) {
-            errors.add("Tên đăng nhập không được để trống.");
+        if (!Validation.isValidUsername(username)) {
+            errors.add("Invalid username. It must be at least 5 characters long and contain only letters and numbers.");
         }
-        if (password == null || password.isEmpty()) {
-            errors.add("Mật khẩu không được để trống.");
+        if (!Validation.isValidPassword(password)) {
+            errors.add("Invalid password. It must be at least 3 characters long and contain only letters and numbers.");
         }
-        if (fullName == null || fullName.isEmpty()) {
-            errors.add("Họ và tên không được để trống.");
+        if (!Validation.isValidName(fullName)) {
+            errors.add("Invalid full name. It must start with a capital letter and contain only letters.");
         }
-        if (email == null || !email.matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
-            errors.add("Email không hợp lệ.");
+        if (!Validation.isValidEmail(email)) {
+            errors.add("Invalid email format.");
         }
-        if (phone == null || !phone.matches("^\\d{10,11}$")) {
-            errors.add("Số điện thoại không hợp lệ.");
+        if (!Validation.isValidAddress(address)) {
+            errors.add("Invalid address format.");
+        }
+        if (!Validation.isValidPhoneNumber(phone)) {
+            errors.add("Invalid phone number. It must contain exactly 10 digits.");
+        }
+        if(!Validation.isValidImageURL(image)){
+            errors.add("Invalid image url");
         }
         if (genderParam == null || genderParam.isEmpty()) {
-            errors.add("Vui lòng chọn giới tính.");
+            errors.add("Please select a gender.");
         }
 
         int roleId = roleFilter != null ? Integer.parseInt(roleFilter) : 0;
         int genderId = genderParam != null ? Integer.parseInt(genderParam) : 0;
         int status = 1;
 
-        // Nếu có lỗi, hiển thị lại form với thông báo lỗi
+        // Check for existing username, email, and phone
+        AccountsDAO accDAO = new AccountsDAO();
+        UserDAO userDAO = new UserDAO();
+
+        if (accDAO.isUsernameExist(username)== true) {
+            errors.add("Username already exists. Please choose another one.");
+        }
+        if (userDAO.isMailExist(email)==true) {
+            errors.add("Email already exists. Please use a different email.");
+        }
+        if (userDAO.isPhoneExist(phone)==true) {
+            errors.add("Phone number already exists. Please use a different number.");
+        }
+
+        // If errors exist, return to form with messages
         if (!errors.isEmpty()) {
             RoleDAO roleDAO = new RoleDAO();
             List<Roles> roleList = roleDAO.getAllRoles();
@@ -94,20 +105,15 @@ public class AdminAddAccounts extends HttpServlet {
             return;
         }
 
-        // Tiến hành thêm tài khoản nếu không có lỗi
-        UserDAO userDAO = new UserDAO();
-        AccountsDAO accDAO = new AccountsDAO();
+        // Proceed to add account if no errors
         int accountId = accDAO.addAccount(username, password, status);
-
         if (accountId > 0) {
             userDAO.addUser(fullName, email, phone, address, genderId, image, accountId, roleId);
             response.sendRedirect("admin_accounts");
         } else {
-            errors.add("Có lỗi xảy ra khi thêm tài khoản.");
+            errors.add("An error occurred while adding the account.");
             request.setAttribute("errors", errors);
             request.getRequestDispatcher("/frontend/view/admin/admin_addaccount.jsp").forward(request, response);
         }
     }
-
 }
-

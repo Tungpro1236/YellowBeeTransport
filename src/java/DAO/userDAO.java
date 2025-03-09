@@ -6,7 +6,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -252,4 +254,70 @@ public class UserDAO extends DBContext {
             return false;
         }
     }
+
+    public Map<String, Integer> getUserCountByRole() {
+        Map<String, Integer> roleCountMap = new HashMap<>();
+        String query = "SELECT r.RoleName, COUNT(*) AS UserCount \n"
+                + "               FROM Users u \n"
+                + "               JOIN Roles r ON u.RoleID = r.RoleID \n"
+                + "               JOIN Accounts a ON u.AccountID = a.AccountID\n"
+                + "               WHERE a.AccountStatusID = 1\n"
+                + "               GROUP BY r.RoleName";
+
+        try (PreparedStatement statement = connection.prepareStatement(query); ResultSet resultSet = statement.executeQuery()) {
+
+            while (resultSet.next()) {
+                roleCountMap.put(resultSet.getString("RoleName"), resultSet.getInt("UserCount"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return roleCountMap;
+    }
+
+    // Đếm tổng số user
+    public int getTotalUserCount() {
+        String query = "SELECT COUNT(*) AS Total FROM Users u\n"
+                + "               JOIN Accounts a ON u.AccountID = a.AccountID\n"
+                + "               WHERE a.AccountStatusID = 1;";
+        try (PreparedStatement statement = connection.prepareStatement(query); ResultSet resultSet = statement.executeQuery()) {
+            if (resultSet.next()) {
+                return resultSet.getInt("Total");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    public boolean isMailExist(String email) {
+        String sql = "SELECT COUNT(*) FROM Users WHERE Email = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, email);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next() && rs.getInt(1) > 0) {
+                    return true;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public boolean isPhoneExist(String phone) {
+        String sql = "SELECT COUNT(*) FROM Users WHERE Phone = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, phone);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next() && rs.getInt(1) > 0) {
+                    return true;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
 }
