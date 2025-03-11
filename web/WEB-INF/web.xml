@@ -72,6 +72,30 @@
         <servlet-name>AdminDetailUser</servlet-name>
         <servlet-class>Controller.Admin.AdminDetailUser</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>AdminManageAccounts</servlet-name>
+        <servlet-class>Controller.Admin.AdminManageAccounts</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>AdminAddAccounts</servlet-name>
+        <servlet-class>Controller.Admin.AdminAddAccounts</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>AdminManagePrice</servlet-name>
+        <servlet-class>Controller.Admin.AdminManagePrice</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>AdminUpdatePrice</servlet-name>
+        <servlet-class>Controller.Admin.AdminUpdatePrice</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>AdminAddAccount</servlet-name>
+        <servlet-class>Controller.Admin.AdminAddAccount</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>AdminAddPrice</servlet-name>
+        <servlet-class>Controller.Admin.AdminAddPrice</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>HomePageServlet</servlet-name>
         <url-pattern>/homepage</url-pattern>
@@ -124,6 +148,30 @@
         <servlet-name>SubmitQuoteController</servlet-name>
         <url-pattern>/submitQuote</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>AdminManageAccounts</servlet-name>
+        <url-pattern>/admin_accounts</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>AdminAddAccounts</servlet-name>
+        <url-pattern>/admin_addaccounts</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>AdminManagePrice</servlet-name>
+        <url-pattern>/admin_price</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>AdminUpdatePrice</servlet-name>
+        <url-pattern>/admin_updateprice</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>AdminAddAccount</servlet-name>
+        <url-pattern>/admin_addaccount</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>AdminAddPrice</servlet-name>
+        <url-pattern>/admin_addprice</url-pattern>
+    </servlet-mapping>
     <welcome-file-list>
         <welcome-file>homepage</welcome-file>
     </welcome-file-list>
@@ -139,5 +187,4 @@
         <servlet-name>AdminDetailUser</servlet-name>
         <url-pattern>/admin_userdetail</url-pattern>
     </servlet-mapping>
-
 </web-app>

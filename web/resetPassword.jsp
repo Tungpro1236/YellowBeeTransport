@@ -17,7 +17,7 @@
         <!-- CSS here -->
         <link rel="stylesheet" href="css/bootstrap.min.css">
         <link rel="stylesheet" href="css/style.css">
-        
+
     </head>
     <body>
         <div class="container d-flex justify-content-center align-items-center" style="height: 100vh;">
@@ -26,7 +26,7 @@
 
                 <!-- Thông báo lỗi từ server -->
                 <c:if test="${not empty error and error ne ''}">
-                    <div class="text-center text-danger fw-bold">${error}</div>
+                    <div class="alert alert-danger text-center">${error}</div>
                 </c:if>  
                 <%@ include file="backHome.jsp" %>
                 <form action="resetPassword" method="post">
@@ -38,6 +38,11 @@
                 </form>
             </div>
         </div>
+        <jsp:include page="/frontend/common/footer.jsp" />
+
+        <script src="js/vendor/jquery-1.12.4.min.js"></script>
+        <script src="js/bootstrap.min.js"></script>
+        <script src="js/main.js"></script>
     </body>
 </html>
 

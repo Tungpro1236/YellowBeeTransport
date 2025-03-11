@@ -1,14 +1,10 @@
 <%@ page contentType="text/html; charset=UTF-8" %>
-<%@ page import="java.util.Map" %>
-
+<%@ page import="java.util.List" %>
+<%@ page import="DAO.PriceDAO" %>
+<%@ page import="Model.PriceCost" %>
 <%
-    Object userRoleDataObj = request.getAttribute("userRoleData");
-    Map<String, Integer> userRoleData = null;
-    if (userRoleDataObj instanceof Map) {
-        userRoleData = (Map<String, Integer>) userRoleDataObj;
-    }
+    PriceCost price = (PriceCost) request.getAttribute("price");
 %>
-
 <!DOCTYPE html>
 <html>
     <head>
@@ -38,56 +34,64 @@
 
         <link rel="stylesheet" href="css/style.css">
         <!-- <link rel="stylesheet" href="css/responsive.css"> -->
+        <style>
+            table {
+                width: 80%;
+                border-collapse: collapse;
+                margin: 50px auto;
+            }
+            table, th, td {
+                border: 1px solid #ccc;
+            }
+            th, td {
+                padding: 10px;
+                text-align: center;
+            }
+            th {
+                background-color: #f4b400;
+                color: white;
+            }
+            tr:nth-child(even) {
+                background-color: #f9f9f9;
+            }
+            tr:hover {
+                background-color: #f1f1f1;
+            }
+        </style>
     </head>
     <body>
 
-       <body>
-
         <jsp:include page="/frontend/common/header.jsp" />
+        <div class="container-fluid mt-3">
+            <div class="row">
+                <div class="col-md-3">
+                    <jsp:include page="/frontend/common/admin_taskbar.jsp" />
+                </div>
 
-    <div class="container-fluid mt-3">
-        <div class="row">
-            <!-- Sidebar -->
-            <div class="col-md-3">
-                <jsp:include page="/frontend/common/admin_taskbar.jsp" />
-            </div>
+                <div class="col-md-9">
+                    <div class="container mt-3">
+                        <h2>Edit Price</h2>
+                        <% if (request.getParameter("error") != null) { %>
+                        <div class="alert alert-danger">Update failed. Please try again.</div>
+                        <% } %>
+                        <form action="admin_updateprice" method="post">
+                            <label>ID:</label>
+                            <input type="text" name="priceCostID" value="<%= price.getPriceCostID() %>" readonly class="form-control mb-2"> 
 
-            <!-- Main content -->
-            <div class="col-md-9">
-                <div class="main-content p-3">
-                    <h2>Welcome to Admin Dashboard</h2>
-                    <div class="card p-3">
-                        <h4 class="mb-3">User Statistics</h4>
-                        <p>Total users: <span style="color: red; font-weight: bold;">${totalUsers}</span>, including:</p>
+                            <label>Description:</label>
+                            <input type="text" name="description" value="<%= price.getDescription() %>" required class="form-control mb-2"> 
 
-                        <ul>
-                            <%
-                                if (userRoleData != null && !userRoleData.isEmpty()) {
-                                    for (Map.Entry<String, Integer> entry : userRoleData.entrySet()) {
-                            %>
-                            <li>
-                                <span><%= entry.getKey() %>:</span>
-                                <span style="color: blue; font-weight: bold;"><%= entry.getValue() %></span> users
-                            </li>
-                            <%
-                                    }
-                                } else {
-                            %>
-                            <li>No data available</li>
-                            <%
-                                }
-                            %>
-                        </ul>
-                    </div>                    
+                            <label>Price:</label>
+                            <input type="number" name="cost" value="<%= price.getCost() %>" step="0.01" required class="form-control mb-2"> 
+
+                            <button type="submit" class="btn btn-primary">Update</button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+        <jsp:include page="/frontend/common/footer.jsp" />
 
-    <jsp:include page="/frontend/common/footer.jsp" />
-        <script src="js/vendor/jquery-1.12.4.min.js"></script>
-        <script src="js/bootstrap.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         <script src="js/vendor/modernizr-3.5.0.min.js"></script>
         <script src="js/vendor/jquery-1.12.4.min.js"></script>
         <script src="js/popper.min.js"></script>

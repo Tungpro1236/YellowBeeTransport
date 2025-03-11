@@ -1,23 +1,30 @@
-<%-- 
-    Document   : signup
-    Created on : Feb 13, 2025, 6:45:59 PM
-    Author     : regio
---%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page import="java.util.List" %>
 <%@ page import="Model.User" %>
-<%@ page import="Model.Accounts" %>
+<%@ page import="Model.Roles" %>
 <%
+    List<Roles> roleList = (List<Roles>) request.getAttribute("roleList");
     List<String> errors = (List<String>) request.getAttribute("errors");
-%>
+    Integer selectedRole = request.getAttribute("roleFilter") instanceof Integer
+                           ? (Integer) request.getAttribute("roleFilter")
+                           : null;
 
+    String roleError = null;
+    if (errors != null) {
+        for (String error : errors) {
+            if (error.toLowerCase().contains("role")) {
+                roleError = error;
+                break;
+            }
+        }
+    }
+%>
 <!DOCTYPE html>
 <html>
     <head>
         <meta charset="utf-8">
         <meta http-equiv="x-ua-compatible" content="ie=edge">
-        <title>Yellow Bee Transport - Signup</title>
+        <title>Yellow Bee Transport</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="shortcut icon" type="image/x-icon" href="img/logo_com.png">
         <link rel="stylesheet" href="css/bootstrap.min.css">
@@ -27,24 +34,30 @@
 
         <jsp:include page="/frontend/common/header.jsp" />
 
-        <div class="container mt-3">
-            <div class="row justify-content-center">
-                <div class="col-md-6">
-                    <div class="card p-4">
-                        <h3 class="text-center">Sign Up</h3>
+        <div class="container-fluid mt-3">
+            <div class="row">
+                <div class="col-md-3">
+                    <jsp:include page="/frontend/common/admin_taskbar.jsp" />
+                </div>
 
-                        <%-- Hiển thị lỗi nếu có --%>
+                <div class="col-md-9">
+                    <div class="main-content p-3">
+                        <h3>Create New Account</h3>
+
+                        <%-- Hiển thị lỗi chung --%>
                         <% if (errors != null && !errors.isEmpty()) { %>
-                        <div class="alert alert-danger">
-                            <ul>
-                                <% for (String error : errors) { %>
-                                <li><%= error %></li>
+                            <div class="alert alert-danger">
+                                <ul>
+                                    <% for (String error : errors) { %>
+                                        <% if (!error.toLowerCase().contains("role")) { %>
+                                            <li><%= error %></li>
+                                        <% } %>
                                     <% } %>
-                            </ul>
-                        </div>
+                                </ul>
+                            </div>
                         <% } %>
 
-                        <form action="signup" method="post">
+                        <form action="admin_addaccounts" method="post">
                             <div class="form-group">
                                 <label>Username:</label>
                                 <input type="text" name="username" class="form-control" 
@@ -89,20 +102,32 @@
                             </div>
 
                             <div class="form-group">
-                                <label>Profile Image URL:</label>
+                                <label>Profile Image:</label>
                                 <input type="text" name="image" class="form-control" 
-                                       value="<%= request.getAttribute("image") != null ? request.getAttribute("image") : "" %>" required>
+                                       value="<%= request.getAttribute("image") != null ? request.getAttribute("image") : "" %>"required>
                             </div>
 
-                            <%-- Role ẩn vì luôn là Customer (ID = 5) --%>
-                            <input type="hidden" name="roleFilter" value="5">
+                            <div class="form-group">
+                                <label>Role:</label>
+                                <select name="roleFilter" class="form-control">
+                                    
+                                    <% if (roleList != null) {
+                                        for (Roles roleObj : roleList) { %>
+                                    <option value="<%= roleObj.getRoleID() %>"
+                                            <% if (selectedRole != null && roleObj.getRoleID() == selectedRole) { %>
+                                            selected
+                                            <% } %>>
+                                        <%= roleObj.getRoleName() %>
+                                    </option>
+                                    <% } } %>
+                                </select>
+                                <% if (roleError != null) { %>
+                                    <span class="text-danger"><%= roleError %></span>
+                                <% } %>
+                            </div>
 
-                            <button type="submit" class="btn btn-primary btn-block">Register</button>
+                            <button type="submit" class="btn btn-primary">Register</button>
                         </form>
-
-                        <p class="text-center mt-3">
-                            Already have an account? <a href="login.jsp">Login here</a>.
-                        </p>
                     </div>
                 </div>
             </div>

@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package DAO;
 
 import DBConnect.DBContext;
@@ -10,7 +6,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -72,12 +70,13 @@ public class UserDAO extends DBContext {
 
     public List<User> getAllUsers() {
         List<User> userList = new ArrayList<>();
-        String query = "SELECT u.UserID, u.FullName, u.Email, u.Phone, u.Address, "
-                + "u.GenderID, u.Image, u.AccountID, a.Username, a.Password, "
-                + "u.RoleID, r.RoleName "
-                + "FROM Users u "
-                + "JOIN Accounts a ON u.AccountID = a.AccountID "
-                + "JOIN Roles r ON u.RoleID = r.RoleID";
+        String query = "SELECT u.UserID, u.FullName, u.Email, u.Phone, u.Address, \n"
+                + "       u.GenderID, u.Image, u.AccountID, a.Username, a.Password, \n"
+                + "       u.RoleID, r.RoleName \n"
+                + "FROM Users u \n"
+                + "JOIN Accounts a ON u.AccountID = a.AccountID \n"
+                + "JOIN Roles r ON u.RoleID = r.RoleID \n"
+                + "WHERE a.AccountStatusID = 1;";
 
         try (PreparedStatement statement = connection.prepareStatement(query); ResultSet resultSet = statement.executeQuery()) {
 
@@ -135,6 +134,190 @@ public class UserDAO extends DBContext {
             e.printStackTrace();
         }
         return user;
+    }
+
+    public User updateUser(User user) {
+        String query = "UPDATE Users SET FullName = ?, Email = ?, Phone = ?, Address = ?, "
+                + "GenderID = ?, Image = ?, RoleID = ? WHERE UserID = ?";
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, user.getFullName());
+            statement.setString(2, user.getEmail());
+            statement.setString(3, user.getPhone());
+            statement.setString(4, user.getAddress());
+            statement.setInt(5, user.getGenderId());
+            statement.setString(6, user.getImage());
+            statement.setInt(7, user.getRoleId());
+            statement.setInt(8, user.getUserId());
+
+            int rowsUpdated = statement.executeUpdate();
+
+            // Nếu cập nhật thành công, lấy lại thông tin user vừa sửa
+            if (rowsUpdated > 0) {
+                return getUserById(user.getUserId());
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null; // Trả về null nếu cập nhật thất bại
+    }
+
+    public List<User> searchUserByName(String name) {
+        List<User> userList = new ArrayList<>();
+        String query = "SELECT u.UserID, u.FullName, u.Email, u.Phone, u.Address, "
+                + "u.GenderID, u.Image, u.AccountID, a.Username, a.Password, "
+                + "u.RoleID, r.RoleName "
+                + "FROM Users u "
+                + "JOIN Accounts a ON u.AccountID = a.AccountID "
+                + "JOIN Roles r ON u.RoleID = r.RoleID "
+                + "WHERE u.FullName LIKE ?";
+
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, "%" + name + "%");  // Tìm kiếm gần đúng theo tên
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    User user = User.builder()
+                            .userId(resultSet.getInt("UserID"))
+                            .fullName(resultSet.getString("FullName"))
+                            .email(resultSet.getString("Email"))
+                            .phone(resultSet.getString("Phone"))
+                            .address(resultSet.getString("Address"))
+                            .genderId(resultSet.getInt("GenderID"))
+                            .image(resultSet.getString("Image"))
+                            .accountId(resultSet.getInt("AccountID"))
+                            .roleId(resultSet.getInt("RoleID"))
+                            .roleName(resultSet.getString("RoleName"))
+                            .build();
+
+                    userList.add(user);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return userList;
+    }
+
+    public List<User> getUsersByRole(int roleId) {
+        List<User> userList = new ArrayList<>();
+        String query = "SELECT u.UserID, u.FullName, u.Email, u.Phone, u.Address, "
+                + "u.GenderID, u.Image, u.AccountID, a.Username, a.Password, "
+                + "u.RoleID, r.RoleName "
+                + "FROM Users u "
+                + "JOIN Accounts a ON u.AccountID = a.AccountID "
+                + "JOIN Roles r ON u.RoleID = r.RoleID "
+                + "WHERE u.RoleID = ?";
+
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setInt(1, roleId);
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    User user = User.builder()
+                            .userId(resultSet.getInt("UserID"))
+                            .fullName(resultSet.getString("FullName"))
+                            .email(resultSet.getString("Email"))
+                            .phone(resultSet.getString("Phone"))
+                            .address(resultSet.getString("Address"))
+                            .genderId(resultSet.getInt("GenderID"))
+                            .image(resultSet.getString("Image"))
+                            .accountId(resultSet.getInt("AccountID"))
+                            .roleId(resultSet.getInt("RoleID"))
+                            .roleName(resultSet.getString("RoleName"))
+                            .build();
+
+                    userList.add(user);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return userList;
+    }
+
+    public boolean addUser(String fullName, String email, String phone, String address, int genderId,
+            String image, int accountId, int roleId) {
+        String query = "INSERT INTO Users (FullName, Email, Phone, Address, GenderID, Image, AccountID, RoleID) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, fullName);
+            statement.setString(2, email);
+            statement.setString(3, phone);
+            statement.setString(4, address);
+            statement.setInt(5, genderId);
+            statement.setString(6, image);
+            statement.setInt(7, accountId);
+            statement.setInt(8, roleId);
+
+            int rowsInserted = statement.executeUpdate();
+            return rowsInserted > 0; // Trả về true nếu có hàng được thêm
+        } catch (SQLException e) {
+            System.err.println("Lỗi khi thêm người dùng: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public Map<String, Integer> getUserCountByRole() {
+        Map<String, Integer> roleCountMap = new HashMap<>();
+        String query = "SELECT r.RoleName, COUNT(*) AS UserCount \n"
+                + "               FROM Users u \n"
+                + "               JOIN Roles r ON u.RoleID = r.RoleID \n"
+                + "               JOIN Accounts a ON u.AccountID = a.AccountID\n"
+                + "               WHERE a.AccountStatusID = 1\n"
+                + "               GROUP BY r.RoleName";
+
+        try (PreparedStatement statement = connection.prepareStatement(query); ResultSet resultSet = statement.executeQuery()) {
+
+            while (resultSet.next()) {
+                roleCountMap.put(resultSet.getString("RoleName"), resultSet.getInt("UserCount"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return roleCountMap;
+    }
+
+    // Đếm tổng số user
+    public int getTotalUserCount() {
+        String query = "SELECT COUNT(*) AS Total FROM Users u\n"
+                + "               JOIN Accounts a ON u.AccountID = a.AccountID\n"
+                + "               WHERE a.AccountStatusID = 1;";
+        try (PreparedStatement statement = connection.prepareStatement(query); ResultSet resultSet = statement.executeQuery()) {
+            if (resultSet.next()) {
+                return resultSet.getInt("Total");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    public boolean isMailExist(String email) {
+        String sql = "SELECT COUNT(*) FROM Users WHERE Email = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, email);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next() && rs.getInt(1) > 0) {
+                    return true;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public boolean isPhoneExist(String phone) {
+        String sql = "SELECT COUNT(*) FROM Users WHERE Phone = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, phone);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next() && rs.getInt(1) > 0) {
+                    return true;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
 }

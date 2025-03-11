@@ -73,16 +73,16 @@
                 </form>
 
                 <div class="text-center mt-2">
-                    <a href="signup">Don't have accounts yet? Sign up</a>
-
+                    
+                    Don't have accounts yet? <a href="signup">Sign up</a>.
                 </div>
             </div>
+        </div>
+        <jsp:include page="/frontend/common/footer.jsp" />
 
-
-
-            <script src="js/jquery-1.12.4.min.js"></script>
-            <script src="js/bootstrap.min.js"></script>
-            <script src="js/main.js"></script>
+        <script src="js/vendor/jquery-1.12.4.min.js"></script>
+        <script src="js/bootstrap.min.js"></script>
+        <script src="js/main.js"></script>
 
     </body>
 </html>
