@@ -8,7 +8,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-          <meta charset="UTF-8">
+        <meta charset="UTF-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>forgot Password</title>
@@ -44,11 +44,11 @@
 
                 <!-- Thông báo lỗi từ server -->
                 <c:if test="${not empty error and error ne ''}">
-                    <div class="text-center text-danger fw-bold">${error}</div>
+                    <div class="alert alert-danger text-center">${error}</div>
                 </c:if>               
 
                 <!-- Thông báo lỗi khi kiểm tra phía client -->
-<!--                <div id="errorDiv" class="alert alert-danger text-center" style="display: none;"></div>-->
+                <!--                <div id="errorDiv" class="alert alert-danger text-center" style="display: none;"></div>-->
                 <%@ include file="backHome.jsp" %>
                 <form action="forgotPassword" method="post" onsubmit="return validateForm(event);">
                     <div class="mb-3">
@@ -59,6 +59,11 @@
                 </form>
             </div>
         </div>
+        <jsp:include page="/frontend/common/footer.jsp" />
+
+        <script src="js/vendor/jquery-1.12.4.min.js"></script>
+        <script src="js/bootstrap.min.js"></script>
+        <script src="js/main.js"></script>
     </body>
 </html>
 
