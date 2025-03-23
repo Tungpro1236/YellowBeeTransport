@@ -96,6 +96,26 @@
         <servlet-name>AdminAddPrice</servlet-name>
         <servlet-class>Controller.Admin.AdminAddPrice</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>CreateCheckingFormServlet</servlet-name>
+        <servlet-class>Controller.Staff.CreateCheckingFormServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>UpdateCheckingFormStatusServlet</servlet-name>
+        <servlet-class>Controller.Staff.UpdateCheckingFormStatusServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>UpdateContractStatusServlet</servlet-name>
+        <servlet-class>Controller.Staff.UpdateContractStatusServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>PriceQuoteServlet</servlet-name>
+        <servlet-class>Controller.Staff.PriceQuoteServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>MovingStaffDashboardServlet</servlet-name>
+        <servlet-class>Controller.Staff.MovingStaffDashboardServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>HomePageServlet</servlet-name>
         <url-pattern>/homepage</url-pattern>
@@ -171,6 +191,26 @@
     <servlet-mapping>
         <servlet-name>AdminAddPrice</servlet-name>
         <url-pattern>/admin_addprice</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>CreateCheckingFormServlet</servlet-name>
+        <url-pattern>/createcheckingform</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>UpdateCheckingFormStatusServlet</servlet-name>
+        <url-pattern>/updatecheckingformstatus</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>UpdateContractStatusServlet</servlet-name>
+        <url-pattern>/updatecontractstatus</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>PriceQuoteServlet</servlet-name>
+        <url-pattern>/pricequote</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>MovingStaffDashboardServlet</servlet-name>
+        <url-pattern>/movingstaffdashboard</url-pattern>
     </servlet-mapping>
     <welcome-file-list>
         <welcome-file>homepage</welcome-file>

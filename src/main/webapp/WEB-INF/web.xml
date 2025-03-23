@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="6.0" xmlns="https://jakarta.ee/xml/ns/jakartaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd">
+    
+    <display-name>YellowBee Transport</display-name>
+    
+    <!-- Welcome File List -->
+    <welcome-file-list>
+        <welcome-file>login.jsp</welcome-file>
+    </welcome-file-list>
+    
+    <!-- Session Configuration -->
+    <session-config>
+        <session-timeout>30</session-timeout>
+    </session-config>
+    
+    <!-- Error Pages -->
+    <error-page>
+        <error-code>404</error-code>
+        <location>/error/404.jsp</location>
+    </error-page>
+    <error-page>
+        <error-code>500</error-code>
+        <location>/error/500.jsp</location>
+    </error-page>
+    
+    <!-- Servlet Mappings -->
+    
+    <!-- Authentication Servlets -->
+    <servlet>
+        <servlet-name>LoginServlet</servlet-name>
+        <servlet-class>Controller.Auth.LoginServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>LoginServlet</servlet-name>
+        <url-pattern>/login</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>LogoutServlet</servlet-name>
+        <servlet-class>Controller.Auth.LogoutServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>LogoutServlet</servlet-name>
+        <url-pattern>/logout</url-pattern>
+    </servlet-mapping>
+    
+    <!-- Staff Servlets -->
+    <servlet>
+        <servlet-name>CreateCheckingFormServlet</servlet-name>
+        <servlet-class>Controller.Staff.CreateCheckingFormServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>CreateCheckingFormServlet</servlet-name>
+        <url-pattern>/create_checking_form</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>CheckingFormsServlet</servlet-name>
+        <servlet-class>Controller.Staff.CheckingFormsServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>CheckingFormsServlet</servlet-name>
+        <url-pattern>/checking_forms</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>WorkScheduleServlet</servlet-name>
+        <servlet-class>Controller.Staff.WorkScheduleServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>WorkScheduleServlet</servlet-name>
+        <url-pattern>/work_schedule</url-pattern>
+    </servlet-mapping>
+    
+    <!-- Contract Servlets -->
+    <servlet>
+        <servlet-name>CreateContractServlet</servlet-name>
+        <servlet-class>Controller.Staff.CreateContractServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>CreateContractServlet</servlet-name>
+        <url-pattern>/create_contract</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>UpdateContractStatusServlet</servlet-name>
+        <servlet-class>Controller.Staff.UpdateContractStatusServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>UpdateContractStatusServlet</servlet-name>
+        <url-pattern>/update_contract_status</url-pattern>
+    </servlet-mapping>
+    
+    <!-- Transport Problem Servlets -->
+    <servlet>
+        <servlet-name>CreateTransportProblemServlet</servlet-name>
+        <servlet-class>Controller.Staff.CreateTransportProblemServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>CreateTransportProblemServlet</servlet-name>
+        <url-pattern>/create_transport_problem</url-pattern>
+    </servlet-mapping>
+    
+    <!-- Security Filter -->
+    <filter>
+        <filter-name>AuthenticationFilter</filter-name>
+        <filter-class>Filter.AuthenticationFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>AuthenticationFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    
+    <!-- JSP Configuration -->
+    <jsp-config>
+        <jsp-property-group>
+            <url-pattern>*.jsp</url-pattern>
+            <page-encoding>UTF-8</page-encoding>
+            <default-content-type>text/html</default-content-type>
+        </jsp-property-group>
+    </jsp-config>
+    
+</web-app> 

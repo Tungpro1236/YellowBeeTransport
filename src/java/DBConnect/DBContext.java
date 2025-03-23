@@ -21,7 +21,7 @@ public class DBContext {
     public DBContext() {
         try {
             String username = "sa";
-            String password = "123";
+            String password = "12345";
             String url = "jdbc:sqlserver://localhost:1433;databaseName=YellowBee;encrypt=true;trustServerCertificate=true";
             Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
             connection = DriverManager.getConnection(url, username, password);
