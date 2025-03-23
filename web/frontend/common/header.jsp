@@ -88,13 +88,13 @@
                                                 <i class="fa fa-dashboard"></i> Dashboard
                                             </a>
                                             <% } else { %>
-                                            <a class="dropdown-item" href="customer/dashboad">
+                                            <a class="dropdown-item" href="customer_dashboard">
                                                 <i class="fa fa-home"></i> Dashboard
                                             </a>
                                             <% } %>
 
                                             <!-- Profile & Logout -->
-                                            <a class="dropdown-item profile-btn" href="profile.jsp">
+                                            <a class="dropdown-item profile-btn" href="userProfile">
                                                 <i class="fa fa-user"></i> Profile
                                             </a>
                                             <a class="dropdown-item logout-btn" href="logout.jsp">

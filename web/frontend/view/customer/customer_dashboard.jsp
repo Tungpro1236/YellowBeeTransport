@@ -1,16 +1,18 @@
-<%@ page contentType="text/html; charset=UTF-8" %>
-<%@ page import="java.util.Map" %>
+<%-- 
+    Document   : customer_dashboard
+    Created on : Mar 16, 2025, 12:53:33 PM
+    Author     : regio
+--%>
+
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+
 
 <%
-    Object userRoleDataObj = request.getAttribute("userRoleData");
-    Map<String, Integer> userRoleData = null;
-    if (userRoleDataObj instanceof Map) {
-        userRoleData = (Map<String, Integer>) userRoleDataObj;
-    }
+    Integer pendingRequests = (Integer) request.getAttribute("pendingRequests");
+    Integer activeContracts = (Integer) request.getAttribute("activeContracts");
 %>
-
-<!DOCTYPE html>
-<html>
+<html lang="vi">
     <head>
         <meta charset="utf-8">
         <meta http-equiv="x-ua-compatible" content="ie=edge">
@@ -39,53 +41,45 @@
         <link rel="stylesheet" href="css/style.css">
         <!-- <link rel="stylesheet" href="css/responsive.css"> -->
     </head>
+
     <body>
-
-
-
         <jsp:include page="/frontend/common/header.jsp" />
 
         <div class="container-fluid mt-3">
             <div class="row">
                 <!-- Sidebar -->
                 <div class="col-md-3">
-                    <jsp:include page="/frontend/common/admin_taskbar.jsp" />
+                    <jsp:include page="/frontend/common/customer_taskbar.jsp" />
                 </div>
 
                 <!-- Main content -->
                 <div class="col-md-9">
                     <div class="main-content p-3">
-                        <h2>Welcome to Admin Dashboard</h2>
+                        <h2>Welcome to Customer Dashboard</h2>
+                        <!-- Contract Statistics -->
                         <div class="card p-3">
-                            <h4 class="mb-3">User Statistics</h4>
-                            <p>Total users: <span style="color: red; font-weight: bold;">${totalUsers}</span>, 
-                                including:</p>
-
+                            <h4 class="mb-3">Contract Statistics</h4>
                             <ul>
-                                <%
-                                    if (userRoleData != null && !userRoleData.isEmpty()) {
-                                        for (Map.Entry<String, Integer> entry : userRoleData.entrySet()) {
-                                %>
-                                <li>
-                                    <span><%= entry.getKey() %>:</span>
-                                    <span style="color: blue; font-weight: bold;"><%= entry.getValue() %></span> users
+                                <li>Pending Requests: 
+                                    <span style="color: orange; font-weight: bold;"><%= (pendingRequests != null) ? pendingRequests : 0 %></span>
                                 </li>
-                                <%
-                                        }
-                                    } else {
-                                %>
-                                <li>No data available</li>
-                                    <%
-                                        }
-                                    %>
+                                <li>Active Contracts: 
+                                    <span style="color: green; font-weight: bold;"><%= (activeContracts != null) ? activeContracts : 0 %></span>
+                                </li>
                             </ul>
-                        </div>                    
+                        </div>     
                     </div>
                 </div>
             </div>
         </div>
 
-        <jsp:include page="/frontend/common/footer.jsp" />
+
+
+
+
+         <div class="mt-5">
+            <jsp:include page="/frontend/common/footer.jsp" />
+        </div>
         <script src="js/vendor/jquery-1.12.4.min.js"></script>
         <script src="js/bootstrap.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>

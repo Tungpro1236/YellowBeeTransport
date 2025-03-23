@@ -3,7 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
 package Auther;
-
+import Utils.Validation;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -14,6 +14,7 @@ import jakarta.servlet.http.HttpSession;
 import DAO.AccountsDAO;
 import DAO.UserDAO;
 import Model.Accounts;
+import Model.User;
 
 /**
  *
@@ -91,7 +92,12 @@ public class loginController extends HttpServlet {
             request.getRequestDispatcher("/login.jsp").forward(request, response);
             return;
         }
-
+        
+        if (!Validation.isValidUsername(username) || !Validation.isValidPassword(password)) {
+            request.setAttribute("error", "Username or password incorrect!");
+            request.getRequestDispatcher("/login.jsp").forward(request, response);
+            return;
+        }
         //  Kiểm tra trạng thái tài khoản (chỉ chạy khi account != null)
         if (!aDAO.isAccountActive(account.getAccountID())) {
             request.setAttribute("error", "Your account is deactivated.");
@@ -101,19 +107,21 @@ public class loginController extends HttpServlet {
 
         // Kiểm tra role
         String role = aDAO.getRoleByUsernameAndPassword(username, password);
-        
+
         if (role == null) {
             request.setAttribute("error", "Unauthorized access");
             request.getRequestDispatcher("/login.jsp").forward(request, response);
             return;
         }
 
+        Integer userId = uDAO.getUserIdByAccountId(account.getAccountID());
+
         // Lưu thông tin vào session
         HttpSession session = request.getSession();
         session.setAttribute("account", account);
         session.setAttribute("username", username);
         session.setAttribute("role", role);
-        response.sendRedirect("homepage");
+        session.setAttribute("userId", userId);
         //Điều hướng dựa trên role
 //        switch (role) {
 //            case "Admin":
@@ -126,7 +134,7 @@ public class loginController extends HttpServlet {
 //                response.sendRedirect("homepage");
 //                break;
 //        }
-
+        response.sendRedirect("homepage");
     }
 
     /**
