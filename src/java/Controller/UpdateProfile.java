@@ -2,14 +2,10 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-package Auther;
+package Controller;
 
 import DAO.UserDAO;
-import DBConnect.DBContext;
-import Utils.Validation;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+import Model.User;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -22,7 +18,7 @@ import jakarta.servlet.http.HttpSession;
  *
  * @author regio
  */
-public class forgotPasswordController extends HttpServlet {
+public class UpdateProfile extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -41,10 +37,10 @@ public class forgotPasswordController extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet forgotPasswordController</title>");
+            out.println("<title>Servlet UpdateProfile</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet forgotPasswordController at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet UpdateProfile at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -62,7 +58,23 @@ public class forgotPasswordController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        request.getRequestDispatcher("/forgotPassword.jsp").forward(request, response);
+        HttpSession session = request.getSession(false); // Không tạo session mới nếu mất
+        if (session == null || session.getAttribute("userId") == null) {
+            response.sendRedirect("login.jsp");
+            return;
+        }
+
+        int userId = (Integer) session.getAttribute("userId"); // Lấy userId từ session
+
+        UserDAO userDAO = new UserDAO();
+        User user = userDAO.getUserById(userId);// Lấy thông tin user từ database
+
+        if (user != null) {
+            request.setAttribute("user", user);
+            request.getRequestDispatcher("editProfile.jsp").forward(request, response);
+        } else {
+            response.sendRedirect("login.jsp"); // Nếu user null, yêu cầu đăng nhập
+        }
     }
 
     /**
@@ -76,24 +88,51 @@ public class forgotPasswordController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-         String email = request.getParameter("email");
-        
-        if (!Validation.isValidEmail(email)) {
-            request.setAttribute("error", "Email không hợp lệ!");
-            request.getRequestDispatcher("forgotPassword.jsp").forward(request, response);
+        HttpSession session = request.getSession(false); // Không tạo session mới
+        if (session == null || session.getAttribute("userId") == null) {
+            response.sendRedirect("login.jsp");
             return;
         }
-        
-        UserDAO userDAO = new UserDAO();
-        boolean emailExists = userDAO.isMailExist(email);
-        
-        if (emailExists) {
-            HttpSession session = request.getSession();
-            session.setAttribute("reset_email", email);
-            response.sendRedirect("resetPassword.jsp");
+
+        int userId = (Integer) session.getAttribute("userId");
+
+        // Lấy dữ liệu từ form
+        String fullName = request.getParameter("fullName");
+        String phone = request.getParameter("phone");
+        String address = request.getParameter("address");
+        String genderIdStr = request.getParameter("genderId");
+
+        int genderId = 0; // Giá trị mặc định
+        if (genderIdStr != null && !genderIdStr.isEmpty()) {
+            try {
+                genderId = Integer.parseInt(genderIdStr);
+            } catch (NumberFormatException e) {
+                response.sendRedirect("editProfile.jsp?error=invalidGender");
+                return;
+            }
         } else {
-            request.setAttribute("error", "Email không tồn tại!");
-            request.getRequestDispatcher("forgotPassword.jsp").forward(request, response);
+            response.sendRedirect("editProfile.jsp?error=missingGender");
+            return;
+        }
+
+        UserDAO userDAO = new UserDAO();
+        User user = userDAO.getUserById(userId); // Lấy user từ DB
+
+        if (user != null) {
+            user.setFullName(fullName);
+            user.setPhone(phone);
+            user.setAddress(address);
+            user.setGenderId(genderId);
+
+            boolean isUpdated = userDAO.updateUser(user);
+            if (isUpdated) {
+                session.setAttribute("user", user); // Cập nhật lại session
+                response.sendRedirect("userProfile.jsp?success=true");
+            } else {
+                response.sendRedirect("editProfile.jsp?error=true");
+            }
+        } else {
+            response.sendRedirect("login.jsp");
         }
     }
 

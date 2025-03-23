@@ -2,26 +2,23 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-package Auther;
+package Controller.Customer;
 
-import DAO.AccountsDAO;
-import DBConnect.DBContext;
-import Utils.Validation;
+import DAO.ContractDAO;
+import Model.Contract;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
+import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
-import java.io.PrintWriter;
+import java.util.List;
 
 /**
  *
  * @author regio
  */
-public class resetPasswordController extends HttpServlet {
+public class CustomerContracts extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -40,10 +37,10 @@ public class resetPasswordController extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet resetPasswordController</title>");
+            out.println("<title>Servlet CustomerContracts</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet resetPasswordController at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet CustomerContracts at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -61,7 +58,20 @@ public class resetPasswordController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        request.getRequestDispatcher("/resetPassword.jsp").forward(request, response);
+        ContractDAO contractDAO = new ContractDAO();
+        List<Contract> contracts;
+
+        // Lọc theo trạng thái nếu có
+        String statusParam = request.getParameter("status");
+        if (statusParam != null) {
+            int status = Integer.parseInt(statusParam);
+            contracts = contractDAO.getContractsByStatus(status);
+        } else {
+            contracts = contractDAO.getAllContracts();
+        }
+
+        request.setAttribute("contracts", contracts);
+        request.getRequestDispatcher("/frontend/view/customer/customer_contracts.jsp").forward(request, response);
     }
 
     /**
@@ -75,32 +85,16 @@ public class resetPasswordController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        HttpSession session = request.getSession();
-        String email = (String) session.getAttribute("reset_email");
-        String newPassword = request.getParameter("newPassword");
+        int contractId = Integer.parseInt(request.getParameter("contractId"));
+        int newStatus = Integer.parseInt(request.getParameter("status"));
 
-        if (email == null) {
-            request.setAttribute("error", "Email not found. Try again.");
-            request.getRequestDispatcher("forgotPassword.jsp").forward(request, response);
-            return;
-        }
+        ContractDAO contractDAO = new ContractDAO();
+        boolean success = contractDAO.updateContractStatus(contractId, newStatus);
 
-        if (!Validation.isValidPassword(newPassword)) {
-            request.setAttribute("error", "Mật khẩu không hợp lệ!");
-            request.getRequestDispatcher("resetPassword.jsp").forward(request, response);
-            return;
-        }
-
-        AccountsDAO accountDAO = new AccountsDAO();
-        boolean isUpdated = accountDAO.updatePassword(email, newPassword);
-
-        if (isUpdated) {
-            request.setAttribute("message", "Password updated successfully!");
-            session.invalidate(); // Xóa session để tránh thay đổi tiếp
-            request.getRequestDispatcher("login.jsp").forward(request, response);
+        if (success) {
+            response.sendRedirect("customer_contracts");
         } else {
-            request.setAttribute("error", "Error updating password.");
-            request.getRequestDispatcher("resetPassword.jsp").forward(request, response);
+            response.getWriter().write("Lỗi cập nhật trạng thái hợp đồng!");
         }
     }
 

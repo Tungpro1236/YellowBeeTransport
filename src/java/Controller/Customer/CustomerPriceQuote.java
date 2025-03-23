@@ -2,26 +2,27 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-package Auther;
+package Controller.Customer;
 
-import DAO.AccountsDAO;
-import DBConnect.DBContext;
-import Utils.Validation;
+import DAO.ContractDAO;
+import DAO.RequestDAO;
+import Model.PriceQuote;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
+import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import java.io.PrintWriter;
+import java.util.List;
 
 /**
  *
  * @author regio
  */
-public class resetPasswordController extends HttpServlet {
+public class CustomerPriceQuote extends HttpServlet {
+
+    private RequestDAO requestDAO = new RequestDAO();
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -40,10 +41,10 @@ public class resetPasswordController extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet resetPasswordController</title>");
+            out.println("<title>Servlet CustomerPriceQuote</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet resetPasswordController at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet CustomerPriceQuote at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -61,7 +62,17 @@ public class resetPasswordController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        request.getRequestDispatcher("/resetPassword.jsp").forward(request, response);
+        HttpSession session = request.getSession();
+        String role = (String) session.getAttribute("role");
+        Integer userId = (Integer) session.getAttribute("userId");
+        if (role == null || !role.equals("Customer")) {
+            request.getRequestDispatcher("/frontend/view/access_denied.jsp").forward(request, response);
+            return;
+        }
+
+        List<PriceQuote> quotes = requestDAO.getRequestsByCustomerId(userId);
+        request.setAttribute("quotes", quotes);
+        request.getRequestDispatcher("/frontend/view/customer/customer_listPrQuote.jsp").forward(request, response);
     }
 
     /**
@@ -75,33 +86,31 @@ public class resetPasswordController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        HttpSession session = request.getSession();
-        String email = (String) session.getAttribute("reset_email");
-        String newPassword = request.getParameter("newPassword");
+        int quoteId = Integer.parseInt(request.getParameter("quoteId"));
+        String action = request.getParameter("action");
 
-        if (email == null) {
-            request.setAttribute("error", "Email not found. Try again.");
-            request.getRequestDispatcher("forgotPassword.jsp").forward(request, response);
-            return;
+        if (action.equals("accept")) {
+            // Khách hàng chấp nhận -> Tạo hợp đồng
+            ContractDAO contractDAO = new ContractDAO();
+            boolean created = contractDAO.createContractFromQuote(quoteId);
+
+            if (created) {
+                response.sendRedirect("customerPriceQuote");
+            } else {
+                response.getWriter().write("Lỗi khi tạo hợp đồng!");
+            }
+        } else if (action.equals("reject")) {
+            // Khách hàng từ chối -> Xóa hoặc vô hiệu hóa báo giá
+            RequestDAO dao = new RequestDAO();
+            boolean success = dao.rejectPriceQuote(quoteId);
+
+            if (success) {
+                response.sendRedirect("customerPriceQuote");
+            } else {
+                response.getWriter().write("Lỗi khi từ chối báo giá!");
+            }
         }
 
-        if (!Validation.isValidPassword(newPassword)) {
-            request.setAttribute("error", "Mật khẩu không hợp lệ!");
-            request.getRequestDispatcher("resetPassword.jsp").forward(request, response);
-            return;
-        }
-
-        AccountsDAO accountDAO = new AccountsDAO();
-        boolean isUpdated = accountDAO.updatePassword(email, newPassword);
-
-        if (isUpdated) {
-            request.setAttribute("message", "Password updated successfully!");
-            session.invalidate(); // Xóa session để tránh thay đổi tiếp
-            request.getRequestDispatcher("login.jsp").forward(request, response);
-        } else {
-            request.setAttribute("error", "Error updating password.");
-            request.getRequestDispatcher("resetPassword.jsp").forward(request, response);
-        }
     }
 
     /**
