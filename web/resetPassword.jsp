@@ -20,15 +20,18 @@
 
     </head>
     <body>
+        <jsp:include page="/frontend/common/header.jsp" />
         <div class="container d-flex justify-content-center align-items-center" style="height: 100vh;">
             <div class="card p-4 shadow-lg" style="width: 400px;">
                 <h3 class="text-center mb-4">Reset Password</h3>
 
-                <!-- Thông báo lỗi từ server -->
-                <c:if test="${not empty error and error ne ''}">
-                    <div class="alert alert-danger text-center">${error}</div>
-                </c:if>  
+                <!-- Hiển thị thông báo lỗi từ server nếu có -->
+                <c:if test="${not empty error}">
+                    <div class="text-danger text-center mb-3">${error}</div>
+                </c:if>
+
                 <%@ include file="backHome.jsp" %>
+
                 <form action="resetPassword" method="post">
                     <div class="mb-3">
                         <label for="newPassword" class="form-label">New Password</label>
@@ -38,9 +41,12 @@
                 </form>
             </div>
         </div>
+
+
         <jsp:include page="/frontend/common/footer.jsp" />
 
-        <script src="js/vendor/jquery-1.12.4.min.js"></script>
+        <!-- JS -->
+        <script src="js/jquery-1.12.4.min.js"></script>
         <script src="js/bootstrap.min.js"></script>
         <script src="js/main.js"></script>
     </body>

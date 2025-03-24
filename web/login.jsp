@@ -78,9 +78,11 @@
                 </div>
             </div>
         </div>
-        <jsp:include page="/frontend/common/footer.jsp" />
-
-        <script src="js/vendor/jquery-1.12.4.min.js"></script>
+         <div class="mt-5">
+            <jsp:include page="/frontend/common/footer.jsp" />
+        </div>
+        <!-- JS -->
+        <script src="js/jquery-1.12.4.min.js"></script>
         <script src="js/bootstrap.min.js"></script>
         <script src="js/main.js"></script>
 

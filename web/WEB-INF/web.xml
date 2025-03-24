@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app version="6.0" xmlns="https://jakarta.ee/xml/ns/jakartaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd">
-    <filter>
+  <filter>
         <filter-name>AuthFilter</filter-name>
         <filter-class>Filter.AuthFilter</filter-class>
     </filter>
@@ -28,7 +28,7 @@
         <servlet-name>AboutUsServlet</servlet-name>
         <servlet-class>Controller.AboutUsServlet</servlet-class>
     </servlet>
-    <servlet>
+      <servlet>
         <servlet-name>ContactServlet</servlet-name>
         <servlet-class>Controller.ContactServlet</servlet-class>
     </servlet>
@@ -96,6 +96,34 @@
         <servlet-name>AdminAddPrice</servlet-name>
         <servlet-class>Controller.Admin.AdminAddPrice</servlet-class>
     </servlet>
+<<<<<<< OURS
+    <servlet>
+        <servlet-name>CustomerDashboardServlet</servlet-name>
+        <servlet-class>Controller.Customer.CustomerDashboardServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>CustomerContracts</servlet-name>
+        <servlet-class>Controller.Customer.CustomerContracts</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>CustomerPriceQuote</servlet-name>
+        <servlet-class>Controller.Customer.CustomerPriceQuote</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>CustomerRequest</servlet-name>
+        <servlet-class>Controller.Customer.CustomerRequest</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>CustomerDetail</servlet-name>
+        <servlet-class>Controller.Customer.CustomerDetail</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>UserProfileServlet</servlet-name>
+        <servlet-class>Controller.UserProfileServlet</servlet-class>
+    </servlet>
+    
+=======
+>>>>>>> THEIRS
     <servlet-mapping>
         <servlet-name>HomePageServlet</servlet-name>
         <url-pattern>/homepage</url-pattern>
@@ -136,10 +164,12 @@
         <servlet-name>ResetpasswordController</servlet-name>
         <url-pattern>/resetPassword</url-pattern>
     </servlet-mapping>
+
     <servlet-mapping>
         <servlet-name>UpdateProfileController</servlet-name>
         <url-pattern>/updateProfile</url-pattern>
     </servlet-mapping>
+
     <servlet-mapping>
         <servlet-name>ProfileController</servlet-name>
         <url-pattern>/profile</url-pattern>
@@ -172,6 +202,26 @@
         <servlet-name>AdminAddPrice</servlet-name>
         <url-pattern>/admin_addprice</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>CustomerContracts</servlet-name>
+        <url-pattern>/customer_contracts</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>CustomerPriceQuote</servlet-name>
+        <url-pattern>/customer_priceQuote</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>CustomerRequest</servlet-name>
+        <url-pattern>/customer_request</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>CustomerDetail</servlet-name>
+        <url-pattern>/customerDetail</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>UserProfileServlet</servlet-name>
+        <url-pattern>/userProfile</url-pattern>
+    </servlet-mapping>
     <welcome-file-list>
         <welcome-file>homepage</welcome-file>
     </welcome-file-list>
@@ -186,5 +236,9 @@
     <servlet-mapping>
         <servlet-name>AdminDetailUser</servlet-name>
         <url-pattern>/admin_userdetail</url-pattern>
+    </servlet-mapping>
+        <servlet-mapping>
+        <servlet-name>CustomerDashboardServlet</servlet-name>
+        <url-pattern>/customer_dashboard</url-pattern>
     </servlet-mapping>
 </web-app>

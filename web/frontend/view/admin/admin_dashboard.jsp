@@ -41,50 +41,51 @@
     </head>
     <body>
 
-       <body>
+
 
         <jsp:include page="/frontend/common/header.jsp" />
 
-    <div class="container-fluid mt-3">
-        <div class="row">
-            <!-- Sidebar -->
-            <div class="col-md-3">
-                <jsp:include page="/frontend/common/admin_taskbar.jsp" />
-            </div>
+        <div class="container-fluid mt-3">
+            <div class="row">
+                <!-- Sidebar -->
+                <div class="col-md-3">
+                    <jsp:include page="/frontend/common/admin_taskbar.jsp" />
+                </div>
 
-            <!-- Main content -->
-            <div class="col-md-9">
-                <div class="main-content p-3">
-                    <h2>Welcome to Admin Dashboard</h2>
-                    <div class="card p-3">
-                        <h4 class="mb-3">User Statistics</h4>
-                        <p>Total users: <span style="color: red; font-weight: bold;">${totalUsers}</span>, including:</p>
+                <!-- Main content -->
+                <div class="col-md-9">
+                    <div class="main-content p-3">
+                        <h2>Welcome to Admin Dashboard</h2>
+                        <div class="card p-3">
+                            <h4 class="mb-3">User Statistics</h4>
+                            <p>Total users: <span style="color: red; font-weight: bold;">${totalUsers}</span>, 
+                                including:</p>
 
-                        <ul>
-                            <%
-                                if (userRoleData != null && !userRoleData.isEmpty()) {
-                                    for (Map.Entry<String, Integer> entry : userRoleData.entrySet()) {
-                            %>
-                            <li>
-                                <span><%= entry.getKey() %>:</span>
-                                <span style="color: blue; font-weight: bold;"><%= entry.getValue() %></span> users
-                            </li>
-                            <%
-                                    }
-                                } else {
-                            %>
-                            <li>No data available</li>
-                            <%
-                                }
-                            %>
-                        </ul>
-                    </div>                    
+                            <ul>
+                                <%
+                                    if (userRoleData != null && !userRoleData.isEmpty()) {
+                                        for (Map.Entry<String, Integer> entry : userRoleData.entrySet()) {
+                                %>
+                                <li>
+                                    <span><%= entry.getKey() %>:</span>
+                                    <span style="color: blue; font-weight: bold;"><%= entry.getValue() %></span> users
+                                </li>
+                                <%
+                                        }
+                                    } else {
+                                %>
+                                <li>No data available</li>
+                                    <%
+                                        }
+                                    %>
+                            </ul>
+                        </div>                    
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <jsp:include page="/frontend/common/footer.jsp" />
+        <jsp:include page="/frontend/common/footer.jsp" />
         <script src="js/vendor/jquery-1.12.4.min.js"></script>
         <script src="js/bootstrap.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>

@@ -12,7 +12,7 @@ import java.util.Map;
 
 /**
  *
- * @author regio
+ * @author Admin
  */
 public class UserDAO extends DBContext {
 
@@ -136,29 +136,23 @@ public class UserDAO extends DBContext {
         return user;
     }
 
-    public User updateUser(User user) {
-        String query = "UPDATE Users SET FullName = ?, Email = ?, Phone = ?, Address = ?, "
-                + "GenderID = ?, Image = ?, RoleID = ? WHERE UserID = ?";
-        try (PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setString(1, user.getFullName());
-            statement.setString(2, user.getEmail());
-            statement.setString(3, user.getPhone());
-            statement.setString(4, user.getAddress());
-            statement.setInt(5, user.getGenderId());
-            statement.setString(6, user.getImage());
-            statement.setInt(7, user.getRoleId());
-            statement.setInt(8, user.getUserId());
+    public boolean updateUser(User user) {
+        String sql = "UPDATE Users SET FullName=?, Phone=?, Address=?, GenderID=? WHERE UserID=?";
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setString(1, user.getFullName());
+            ps.setString(2, user.getPhone());
+            ps.setString(3, user.getAddress());
+            ps.setInt(4, user.getGenderId());
+            ps.setInt(5, user.getUserId());
 
-            int rowsUpdated = statement.executeUpdate();
-
-            // Nếu cập nhật thành công, lấy lại thông tin user vừa sửa
-            if (rowsUpdated > 0) {
-                return getUserById(user.getUserId());
-            }
+            int rowsUpdated = ps.executeUpdate();
+            System.out.println("🔥 updateUser() - Rows affected: " + rowsUpdated);
+            return rowsUpdated > 0; // Trả về true nếu update thành công
         } catch (SQLException e) {
             e.printStackTrace();
+            return false; // Lỗi thì trả về false
         }
-        return null; // Trả về null nếu cập nhật thất bại
     }
 
     public List<User> searchUserByName(String name) {
@@ -320,4 +314,18 @@ public class UserDAO extends DBContext {
         return false;
     }
 
+    public Integer getUserIdByAccountId(int accountId) {
+        String query = "SELECT UserID FROM Users WHERE AccountID = ?";
+        try {
+            PreparedStatement statement = connection.prepareStatement(query);
+            statement.setInt(1, accountId);
+            ResultSet result = statement.executeQuery();
+            if (result.next()) {
+                return result.getInt("userId");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }

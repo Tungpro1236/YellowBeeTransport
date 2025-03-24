@@ -84,7 +84,7 @@
                                 <label>Gender:</label>
                                 <select name="gender" class="form-control">
                                     <option value="1" <% if ("1".equals(request.getAttribute("gender"))) { %> selected <% } %>>Male</option>
-                                    <option value="2" <% if ("2".equals(request.getAttribute("gender"))) { %> selected <% } %>>Female</option>
+                                    <option value="2" <% if ("2".equals(request.getAttribute("gender"))) { %> selected <% } %>>Female</option>             
                                 </select>
                             </div>
 
@@ -108,7 +108,9 @@
             </div>
         </div>
 
-        <jsp:include page="/frontend/common/footer.jsp" />
+        <div class="mt-5">
+            <jsp:include page="/frontend/common/footer.jsp" />
+        </div>
 
         <script src="js/vendor/jquery-1.12.4.min.js"></script>
         <script src="js/bootstrap.min.js"></script>

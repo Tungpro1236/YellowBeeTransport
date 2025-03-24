@@ -260,4 +260,18 @@ public class AccountsDAO extends DBContext {
         }
         return false;
     }
+
+    public boolean updatePassword(String email, String newPassword) {
+        String sql = "UPDATE Accounts SET Password=? WHERE AccountID = (SELECT AccountID FROM Users WHERE Email=?)";
+        
+        try (
+             PreparedStatement statement= connection.prepareStatement(sql)) {
+            statement.setString(1, newPassword);
+            statement.setString(2, email);
+            return statement.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }

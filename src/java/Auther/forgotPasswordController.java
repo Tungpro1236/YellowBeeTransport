@@ -4,7 +4,9 @@
  */
 package Auther;
 
+import DAO.UserDAO;
 import DBConnect.DBContext;
+import Utils.Validation;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -74,23 +76,17 @@ public class forgotPasswordController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String email = request.getParameter("email");
-        DBContext db = new DBContext();
-        Connection conn = db.connection; // Hàm kết nối DB
-        boolean emailExists = false;
-
-        try {
-            PreparedStatement ps = conn.prepareStatement("SELECT * FROM Users WHERE Email = ?");
-            ps.setString(1, email);
-            ResultSet rs = ps.executeQuery();
-
-            if (rs.next()) {
-                emailExists = true;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+         String email = request.getParameter("email");
+        
+        if (!Validation.isValidEmail(email)) {
+            request.setAttribute("error", "Email không hợp lệ!");
+            request.getRequestDispatcher("forgotPassword.jsp").forward(request, response);
+            return;
         }
-
+        
+        UserDAO userDAO = new UserDAO();
+        boolean emailExists = userDAO.isMailExist(email);
+        
         if (emailExists) {
             HttpSession session = request.getSession();
             session.setAttribute("reset_email", email);

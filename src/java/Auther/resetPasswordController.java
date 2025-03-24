@@ -4,7 +4,9 @@
  */
 package Auther;
 
+import DAO.AccountsDAO;
 import DBConnect.DBContext;
+import Utils.Validation;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -59,7 +61,7 @@ public class resetPasswordController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-            request.getRequestDispatcher("/resetPassword.jsp").forward(request, response);
+        request.getRequestDispatcher("/resetPassword.jsp").forward(request, response);
     }
 
     /**
@@ -78,32 +80,26 @@ public class resetPasswordController extends HttpServlet {
         String newPassword = request.getParameter("newPassword");
 
         if (email == null) {
-            request.setAttribute("error", "Session expired. Try again.");
+            request.setAttribute("error", "Email not found. Try again.");
             request.getRequestDispatcher("forgotPassword.jsp").forward(request, response);
             return;
         }
 
-        DBContext db = new DBContext();
-        Connection conn = db.connection;
-        ;
-        try {
-            PreparedStatement ps = conn.prepareStatement("UPDATE Accounts SET Password=? "
-                    + "WHERE AccountID = (SELECT AccountID FROM Users WHERE Email=?)");
-            ps.setString(1, newPassword);
-            ps.setString(2, email);
-            int rowsUpdated = ps.executeUpdate();
+        if (!Validation.isValidPassword(newPassword)) {
+            request.setAttribute("error", "Mật khẩu không hợp lệ!");
+            request.getRequestDispatcher("resetPassword.jsp").forward(request, response);
+            return;
+        }
 
-            if (rowsUpdated > 0) {
-                request.setAttribute("message", "Password updated successfully!");
-                session.invalidate(); // Xóa session để tránh thay đổi tiếp
-                request.getRequestDispatcher("login.jsp").forward(request, response);
-            } else {
-                request.setAttribute("error", "Error updating password.");
-                request.getRequestDispatcher("resetPassword.jsp").forward(request, response);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            request.setAttribute("error", "Something went wrong!");
+        AccountsDAO accountDAO = new AccountsDAO();
+        boolean isUpdated = accountDAO.updatePassword(email, newPassword);
+
+        if (isUpdated) {
+            request.setAttribute("message", "Password updated successfully!");
+            session.invalidate(); // Xóa session để tránh thay đổi tiếp
+            request.getRequestDispatcher("login.jsp").forward(request, response);
+        } else {
+            request.setAttribute("error", "Error updating password.");
             request.getRequestDispatcher("resetPassword.jsp").forward(request, response);
         }
     }
