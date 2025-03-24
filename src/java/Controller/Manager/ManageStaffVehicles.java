@@ -25,12 +25,33 @@ public class ManageStaffVehicles extends HttpServlet {
         StaffDAO staffDAO = new StaffDAO();
         TruckDAO truckDAO = new TruckDAO();
 
-        // Lấy danh sách nhân viên và xe
-        List<Staff> staffList = staffDAO.getAllStaff();
+        // Lấy danh sách nhân viên chia theo nhóm
+        List<Staff> surveyStaffList = staffDAO.getAllSurveyStaff(); // RoleID = 1
+        List<Staff> movingStaffList = staffDAO.getAllMovingStaff(); // RoleID = 2
+
+        // Lấy danh sách xe tải
         List<Truck> truckList = truckDAO.getAllTrucks();
 
+        // Debug log dữ liệu
+        System.out.println("Survey Staff List:");
+        for (Staff s : surveyStaffList) {
+            System.out.println(s.getStaffID() + " | Contract: " + s.getCurrentContractID() + " | Checking Form: " + s.getCurrentCheckingFormID());
+        }
+
+        System.out.println("Moving Staff List:");
+        for (Staff s : movingStaffList) {
+            System.out.println(s.getStaffID() + " | Contract: " + s.getCurrentContractID() + " | Checking Form: " + s.getCurrentCheckingFormID());
+        }
+
+        // Kiểm tra dữ liệu xe tải
+        System.out.println("Truck List:");
+        for (Truck t : truckList) {
+            System.out.println(t.getTruckID() + " | Contract: " + t.getCurrentContractID());
+        }
+
         // Đặt dữ liệu vào request
-        request.setAttribute("staffList", staffList);
+        request.setAttribute("surveyStaffList", surveyStaffList);
+        request.setAttribute("movingStaffList", movingStaffList);
         request.setAttribute("truckList", truckList);
 
         // Chuyển hướng đến trang JSP

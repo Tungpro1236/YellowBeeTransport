@@ -24,21 +24,6 @@ public class ReportDAO {
         }
     }
     
-    // Lấy số lượng hợp đồng theo trạng thái
-    public Map<String, Integer> getContractStatusCounts() {
-        Map<String, Integer> statusCounts = new HashMap<>();
-        String sql = "SELECT ContractStatus, COUNT(*) AS Count FROM Contracts GROUP BY ContractStatus";
-        
-        try (PreparedStatement ps = connection.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
-            while (rs.next()) {
-                statusCounts.put(rs.getString("ContractStatus"), rs.getInt("Count"));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return statusCounts;
-    }
     
     // Tính tổng doanh thu trong khoảng thời gian
     public double getTotalRevenue(String startDate, String endDate) {
@@ -58,35 +43,67 @@ public class ReportDAO {
         return totalRevenue;
     }
     
-    // Lấy số lượng vấn đề phát sinh trong quá trình vận chuyển
-    public int getTotalTransportProblems() {
-        String sql = "SELECT COUNT(*) AS TotalProblems FROM TransportProblemForm";
-        int totalProblems = 0;
-        
-        try (PreparedStatement ps = connection.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
-            if (rs.next()) {
-                totalProblems = rs.getInt("TotalProblems");
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return totalProblems;
-    }
-    
-    // Lấy nhân viên xử lý nhiều vấn đề nhất
-    public Map<Integer, Integer> getTopProblemSolvers() {
-        Map<Integer, Integer> topSolvers = new HashMap<>();
-        String sql = "SELECT StaffID, COUNT(*) AS ProblemCount FROM TransportProblemForm GROUP BY StaffID ORDER BY ProblemCount DESC LIMIT 5";
-        
+       public Map<String, Integer> getContractStatusCounts() {
+        Map<String, Integer> map = new HashMap<>();
+        String sql = "SELECT cs.Description, COUNT(*) AS total " +
+                     "FROM Contracts c " +
+                     "JOIN ContractStatus cs ON c.ContractStatusID = cs.ContractStatusID " +
+                     "GROUP BY cs.Description";
         try (PreparedStatement ps = connection.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
-                topSolvers.put(rs.getInt("StaffID"), rs.getInt("ProblemCount"));
+                map.put(rs.getString("Description"), rs.getInt("total"));
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return topSolvers;
+        return map;
+    }
+    
+    public int getTotalTransportProblemsUnresolved() {
+    int total = 0;
+    String sql = "SELECT COUNT(*) AS total FROM TransportProblemForm WHERE Status = 'Pending'";
+    try (PreparedStatement ps = connection.prepareStatement(sql);
+         ResultSet rs = ps.executeQuery()) {
+        if (rs.next()) {
+            total = rs.getInt("total");
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return total;
+}
+
+    public int getTotalCheckingFormsByStatus(String status) {
+        int total = 0;
+        String sql = "SELECT COUNT(*) AS total FROM CheckingForm WHERE Status = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, status);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                total = rs.getInt("total");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return total;
+    }
+    
+    public int getTotalContractsByStatus(String status) {
+        int total = 0;
+        String sql = "SELECT COUNT(*) AS total " +
+                     "FROM Contracts c " +
+                     "JOIN ContractStatus cs ON c.ContractStatusID = cs.ContractStatusID " +
+                     "WHERE cs.Description = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, status);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                total = rs.getInt("total");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return total;
     }
 }

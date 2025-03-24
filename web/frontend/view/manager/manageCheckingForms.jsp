@@ -36,7 +36,7 @@
                         <thead>
                             <tr>
                                 <th>ID</th>
-                                <th>Customer ID</th>
+                                <th>User ID</th>
                                 <th>Name</th>
                                 <th>Phone</th>
                                 <th>Email</th>
@@ -49,59 +49,32 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <% List<CheckingForm> pendingForms = (List<CheckingForm>) request.getAttribute("pendingForms");
-                               if (pendingForms != null) {
-                                   for (CheckingForm form : pendingForms) { %>
-                            <tr>
-                                <td><%= form.getCheckingFormID() %></td>
-                                <td><%= form.getCustomerID() %></td>
-                                <td><%= form.getName() %></td>
-                                <td><%= form.getPhone() %></td>
-                                <td><%= form.getEmail() %></td>
-                                <td><%= form.getAddress() %></td>
-                                <td><%= form.getCheckingTime() %></td>
-                                <td><%= form.getTransportTime() %></td>
-                                <td><%= form.getServiceID() %></td>
-                                <td><%= form.getStatus() %></td>               
-                                <td>
-                                    <!-- Approve Button -->
-                                    <button onclick="showStaffSelection('<%= form.getCheckingFormID() %>')">Approve</button>
-                                    <div id="staffSelect<%= form.getCheckingFormID() %>" style="display: none;">
+                            <c:forEach var="form" items="${pendingForms}">
+                                <tr>
+                                    <td>${form.checkingFormID}</td>
+                                    <td>${form.userID}</td>
+                                    <td>${form.name}</td>
+                                    <td>${form.phone}</td>
+                                    <td>${form.email}</td>
+                                    <td>${form.address}</td>
+                                    <td>${form.checkingTime}</td>
+                                    <td>${form.transportTime}</td>
+                                    <td>${form.serviceID}</td>
+                                    <td>${form.status}</td>
+                                    <td>
                                         <form method="post" action="ManageCheckingForms">
                                             <input type="hidden" name="action" value="approve">
-                                            <input type="hidden" name="checkingFormID" value="<%= form.getCheckingFormID() %>">
-
-                                            <!-- Kiểm tra danh sách nhân viên có trống không -->
-                                            <c:if test="${empty staffList}">
-                                                <p style="color: red;">No staff available or staffList is null</p>
-                                            </c:if>
-                                                
-                                            <select name="staffID" required>
-                                                <c:choose>
-                                                    <c:when test="${not empty staffList}">
-
-                                                        <c:forEach var="staff" items="${staffList}">
-                                                            <option value="${staff.staffID}">${staff.fullName}</option>
-                                                        </c:forEach>
-                                                    </c:when>
-                                                    <c:otherwise>
-                                                        <option disabled>No available staff</option>
-                                                    </c:otherwise>
-                                                </c:choose>
-                                            </select>
-                                            <button type="submit">Confirm</button>
+                                            <input type="hidden" name="checkingFormID" value="${form.checkingFormID}">
+                                            <button type="submit">Approve</button>
                                         </form>
-                                    </div>
-                                    <form method="post" action="ManageCheckingForms">
-                                        <input type="hidden" name="action" value="reject">
-                                        <input type="hidden" name="checkingFormID" value="<%= form.getCheckingFormID() %>">
-                                        <button type="submit">Reject</button>
-                                    </form>
-                                </td>
-                            </tr>
-                            <% } } else { %>
-                            <tr><td colspan="12" class="text-center">No pending forms available</td></tr>
-                            <% } %>
+                                        <form method="post" action="ManageCheckingForms">
+                                            <input type="hidden" name="action" value="reject">
+                                            <input type="hidden" name="checkingFormID" value="${form.checkingFormID}">
+                                            <button type="submit">Reject</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            </c:forEach>
                         </tbody>
                     </table>
 
@@ -111,7 +84,7 @@
                         <thead>
                             <tr>
                                 <th>ID</th>
-                                <th>Customer ID</th>
+                                <th>User ID</th>
                                 <th>Name</th>
                                 <th>Phone</th>
                                 <th>Email</th>
@@ -128,7 +101,7 @@
                                    for (CheckingForm form : approvedForms) { %>
                             <tr>
                                 <td><%= form.getCheckingFormID() %></td>
-                                <td><%= form.getCustomerID() %></td>
+                                <td><%= form.getUserID() %></td>
                                 <td><%= form.getName() %></td>
                                 <td><%= form.getPhone() %></td>
                                 <td><%= form.getEmail() %></td>
@@ -136,7 +109,7 @@
                                 <td><%= form.getCheckingTime() %></td>
                                 <td><%= form.getTransportTime() %></td>
                                 <td><%= form.getServiceID() %></td>
-                                <td><%= form.getAssignedStaffID() %></td>
+                                <td><%= form.getStaffID() %></td>
                             </tr>
                             <% } } else { %>
                             <tr><td colspan="10" class="text-center">No approved forms available</td></tr>
@@ -150,7 +123,7 @@
                         <thead>
                             <tr>
                                 <th>ID</th>
-                                <th>Customer ID</th>
+                                <th>User ID</th>
                                 <th>Name</th>
                                 <th>Phone</th>
                                 <th>Email</th>
@@ -166,7 +139,7 @@
                                    for (CheckingForm form : rejectedForms) { %>
                             <tr>
                                 <td><%= form.getCheckingFormID() %></td>
-                                <td><%= form.getCustomerID() %></td>
+                                <td><%= form.getUserID() %></td>
                                 <td><%= form.getName() %></td>
                                 <td><%= form.getPhone() %></td>
                                 <td><%= form.getEmail() %></td>
@@ -184,17 +157,6 @@
             </div>
         </div>
         <jsp:include page="/frontend/common/footer.jsp" />
-
-        <script>
-            function showStaffSelection(checkingFormID) {
-                var div = document.getElementById("staffSelect" + checkingFormID);
-                if (div.style.display === "none") {
-                    div.style.display = "block";
-                } else {
-                    div.style.display = "none";
-                }
-            }
-        </script>
 
     </body>
 </html>

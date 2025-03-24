@@ -1,8 +1,3 @@
-<%-- 
-    Document   : manageContracts
-    Created on : Mar 1, 2025, 8:37:39 AM
-    Author     : admin
---%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ page import="java.util.List" %>
 <%@ page import="Model.Contract" %>
@@ -14,105 +9,137 @@
         <meta http-equiv="x-ua-compatible" content="ie=edge">
         <title>Manage Contracts</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
-
         <link rel="shortcut icon" type="image/x-icon" href="${pageContext.request.contextPath}/img/logo_com.png">
-
-        <!-- CSS here -->
         <link rel="stylesheet" href="${pageContext.request.contextPath}/css/bootstrap.min.css">
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/css/owl.carousel.min.css">
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/css/magnific-popup.css">
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/css/font-awesome.min.css">
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/css/themify-icons.css">
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/css/nice-select.css">
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/css/flaticon.css">
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/css/gijgo.css">
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/css/animate.css">
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/css/slick.css">
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/css/slicknav.css">
         <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
-
+        <style>
+            .report-table {
+                margin-bottom: 20px;
+            }
+            .report-table th {
+                font-weight: bold;
+            }
+        </style>
     </head>
-
-
     <body>
         <jsp:include page="/frontend/common/header.jsp" />
-
         <div class="container mt-4">
             <div class="row">
                 <div class="col-md-3">
                     <jsp:include page="/frontend/common/sidebar.jsp" />
                 </div>
-
                 <div class="col-md-9">
                     <h3 class="text-center">Manage Contracts</h3>
-                    <c:choose>
-                        <c:when test="${not empty contracts}">
-                            <table border="1">
-                                <thead>
-                                    <tr>
-                                        <th>Contract ID</th>
-                                        <th>Checking Form ID</th>
-                                        <th>Price Quote ID</th>
-                                        <th>Truck IDs</th>
-                                        <th>Staff IDs</th>
-                                        <th>Final Cost</th>
-                                        <th>Contract Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <c:forEach var="contract" items="${contracts}">
-                                        <tr>
-                                            <td>${contract.contractID}</td>
-                                            <td>${contract.checkingFormID}</td>
-                                            <td>${contract.priceQuoteID}</td>
-                                            <td>${contract.truckID != null ? contract.truckID : "N/A"}</td>
-                                            <td>${contract.staffID != null ? contract.staffID : "N/A"}</td>
-                                            <td>${contract.finalCost}</td>
-                                            <td>${contract.contractStatusID}</td>
-                                        </tr>
-                                    </c:forEach>
-                                </tbody>
-                            </table>
-                        </c:when>
-                        <c:otherwise>
-                            <p style="color: red; font-weight: bold;">Không có hợp đồng nào được tìm thấy.</p>
-                        </c:otherwise>
-                    </c:choose>
+
+                    <h4>Pending Contracts</h4>
+                    <table class="table table-bordered report-table">
+                        <thead>
+                            <tr>
+                                <th>Contract ID</th>
+                                <th>Checking Form ID</th>
+                                <th>Price Quote ID</th>
+                                <th>Final Cost</th>
+                                <th>Contract Date</th>
+                                <th>Staff Assigned</th>
+                                <th>Trucks Assigned</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <c:forEach var="contract" items="${pendingContracts}">
+                                <tr>
+                                    <td>${contract.contractId}</td>
+                                    <td>${contract.checkingFormId}</td>
+                                    <td>${contract.priceQuoteId}</td>
+                                    <td>${contract.finalCost}</td>
+                                    <td>${contract.contractDate}</td>
+                                    <td>${contract.staffNames}</td>
+                                    <td>${contract.licensePlates}</td>
+                                    <td>
+                                        <!-- Nút Completed -->
+                                        <form method="post" action="ManageContracts" style="display:inline-block; margin-right:5px;">
+                                            <input type="hidden" name="contractId" value="${contract.contractId}" />
+                                            <input type="hidden" name="action" value="updateStatus" />
+                                            <input type="hidden" name="newStatus" value="Completed" />
+                                            <button type="submit" class="btn btn-success btn-sm" onclick="return confirm('Are you sure to mark this contract as Completed?');">Completed</button>
+                                        </form>
+                                        <!-- Nút Canceled -->
+                                        <form method="post" action="ManageContracts" style="display:inline-block;">
+                                            <input type="hidden" name="contractId" value="${contract.contractId}" />
+                                            <input type="hidden" name="action" value="updateStatus" />
+                                            <input type="hidden" name="newStatus" value="Cancelled" />
+                                            <button type="submit" class="btn btn-warning btn-sm" onclick="return confirm('Are you sure to cancel this contract?');">Canceled</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            </c:forEach>
+                        </tbody>
+                    </table>
+
+
+                    <!-- Completed Contracts Table -->
+                    <h4>Completed Contracts</h4>
+                    <table class="table table-bordered report-table">
+                        <thead>
+                            <tr>
+                                <th>Contract ID</th>
+                                <th>Checking Form ID</th>
+                                <th>Price Quote ID</th>
+                                <th>Final Cost</th>
+                                <th>Contract Date</th>
+                                <th>Staff Assigned</th>
+                                <th>Trucks Assigned</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <c:forEach var="contract" items="${completedContracts}">
+                                <tr>
+                                    <td>${contract.contractId}</td>
+                                    <td>${contract.checkingFormId}</td>
+                                    <td>${contract.priceQuoteId}</td>
+                                    <td>${contract.finalCost}</td>
+                                    <td>${contract.contractDate}</td>
+                                    <td>${contract.staffNames}</td>
+                                    <td>${contract.licensePlates}</td>
+                                </tr>
+                            </c:forEach>
+                        </tbody>
+                    </table>
+
+                    <!-- Canceled Contracts Table -->
+                    <h4>Canceled Contracts</h4>
+                    <table class="table table-bordered report-table">
+                        <thead>
+                            <tr>
+                                <th>Contract ID</th>
+                                <th>Checking Form ID</th>
+                                <th>Price Quote ID</th>
+                                <th>Final Cost</th>
+                                <th>Contract Date</th>
+                                <th>Staff Assigned</th>
+                                <th>Trucks Assigned</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <c:forEach var="contract" items="${canceledContracts}">
+                                <tr>
+                                    <td>${contract.contractId}</td>
+                                    <td>${contract.checkingFormId}</td>
+                                    <td>${contract.priceQuoteId}</td>
+                                    <td>${contract.finalCost}</td>
+                                    <td>${contract.contractDate}</td>
+                                    <td>${contract.staffNames}</td>
+                                    <td>${contract.licensePlates}</td>
+                                </tr>
+                            </c:forEach>
+                        </tbody>
+                    </table>
+
                 </div>
             </div>
         </div>
-
-
         <jsp:include page="/frontend/common/footer.jsp" />
-
-        <script>
-            function confirmDelete(contractID) {
-                if (confirm("Are you sure you want to cancel this contract?")) {
-                    document.getElementById("cancelForm" + contractID).submit();
-                }
-            }
-        </script>
-
-
-
-        <script src="${pageContext.request.contextPath}/js/vendor/modernizr-3.5.0.min.js"></script>
-        <script src="${pageContext.request.contextPath}/js/vendor/jquery-1.12.4.min.js"></script>
-        <script src="${pageContext.request.contextPath}/js/popper.min.js"></script>
+        <script src="${pageContext.request.contextPath}/js/jquery-1.12.4.min.js"></script>
         <script src="${pageContext.request.contextPath}/js/bootstrap.min.js"></script>
-        <script src="${pageContext.request.contextPath}/js/owl.carousel.min.js"></script>
-        <script src="${pageContext.request.contextPath}/js/isotope.pkgd.min.js"></script>
-        <script src="${pageContext.request.contextPath}/js/ajax-form.js"></script>
-        <script src="${pageContext.request.contextPath}/js/waypoints.min.js"></script>
-        <script src="${pageContext.request.contextPath}/js/jquery.counterup.min.js"></script>
-        <script src="${pageContext.request.contextPath}/js/imagesloaded.pkgd.min.js"></script>
-        <script src="${pageContext.request.contextPath}/js/scrollIt.js"></script>
-        <script src="${pageContext.request.contextPath}/js/jquery.scrollUp.min.js"></script>
-        <script src="${pageContext.request.contextPath}/js/wow.min.js"></script>
-        <script src="${pageContext.request.contextPath}/js/nice-select.min.js"></script>
-        <script src="${pageContext.request.contextPath}/js/jquery.slicknav.min.js"></script>
-        <script src="${pageContext.request.contextPath}/js/jquery.magnific-popup.min.js"></script>
-        <script src="${pageContext.request.contextPath}/js/plugins.js"></script>
-        <script src="${pageContext.request.contextPath}/js/slick.min.js"></script>
-        <script src="${pageContext.request.contextPath}/js/main.js"></script>
     </body>
 </html>

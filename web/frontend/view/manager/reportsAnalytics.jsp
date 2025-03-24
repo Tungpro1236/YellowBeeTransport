@@ -3,6 +3,7 @@
     Created on : Mar 4, 2025, 9:12:33 AM
     Author     : admin
 --%>
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ page import="java.util.Map" %>
 <%@ page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
@@ -12,8 +13,18 @@
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <title>Report & Analytics</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
+    <link rel="shortcut icon" type="image/x-icon" href="${pageContext.request.contextPath}/img/logo_com.png">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/bootstrap.min.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
+    <style>
+        /* Tô đậm tiêu đề bảng và thêm khoảng cách giữa các bảng */
+        .table {
+            margin-bottom: 40px;
+        }
+        .table {
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
     <jsp:include page="/frontend/common/header.jsp" />
@@ -25,66 +36,64 @@
             <div class="col-md-9">
                 <h3 class="text-center">Report & Analytics</h3>
                 
-                <h4>Contract Status Overview</h4>
-                <table class="table table-bordered">
+                <!-- Checking Forms Overview -->
+                <h4>Checking Forms Overview</h4>
+                <table class="table">
                     <thead>
                         <tr>
                             <th>Status</th>
-                            <th>Count</th>
+                            <th>Total</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <% 
-                            Map<String, Integer> contractStatusCounts = (Map<String, Integer>) request.getAttribute("contractStatusCounts");
-                            if (contractStatusCounts != null) {
-                                for (Map.Entry<String, Integer> entry : contractStatusCounts.entrySet()) {
-                        %>
                         <tr>
-                            <td><%= entry.getKey() %></td>
-                            <td><%= entry.getValue() %></td>
+                            <td>Pending Checking Forms</td>
+                            <td><c:out value="${totalPendingCheckingForms}" default="0"/></td>
                         </tr>
-                        <% 
-                                }
-                            } else { 
-                        %>
                         <tr>
-                            <td colspan="2" class="text-center">No data available</td>
+                            <td>Approved Checking Forms</td>
+                            <td><c:out value="${totalApprovedCheckingForms}" default="0"/></td>
                         </tr>
-                        <% } %>
                     </tbody>
                 </table>
                 
-                <h4>Total Transport Problems: <%= request.getAttribute("totalProblems") %></h4>
-                
-                <h4>Top Problem Solvers</h4>
-                <table class="table table-bordered">
+                <!-- Contracts Overview -->
+                <h4>Contracts Overview</h4>
+                <table class="table">
                     <thead>
                         <tr>
-                            <th>Staff ID</th>
-                            <th>Resolved Problems</th>
+                            <th>Status</th>
+                            <th>Total</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <% 
-                            Map<Integer, Integer> topProblemSolvers = (Map<Integer, Integer>) request.getAttribute("topProblemSolvers");
-                            if (topProblemSolvers != null) {
-                                for (Map.Entry<Integer, Integer> entry : topProblemSolvers.entrySet()) {
-                        %>
                         <tr>
-                            <td><%= entry.getKey() %></td>
-                            <td><%= entry.getValue() %></td>
+                            <td>Pending Contracts</td>
+                            <td><c:out value="${totalPendingContracts}" default="0"/></td>
                         </tr>
-                        <% 
-                                }
-                            } else { 
-                        %>
                         <tr>
-                            <td colspan="2" class="text-center">No data available</td>
+                            <td>Completed Contracts</td>
+                            <td><c:out value="${totalCompletedContracts}" default="0"/></td>
                         </tr>
-                        <% } %>
                     </tbody>
                 </table>
                 
+                <!-- Transport Problems Overview -->
+                <h4>Transport Problems Overview</h4>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Total Unresolved Transport Problems</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><c:out value="${totalProblemsUnresolved}" default="0"/></td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <!-- Revenue Report --> 
                 <h4>Revenue Report</h4>
                 <form method="post" action="ReportsAnalytics">
                     <label>Start Date:</label>
@@ -93,13 +102,12 @@
                     <input type="date" name="endDate" required>
                     <button type="submit">Get Revenue</button>
                 </form>
-                <% if (request.getAttribute("totalRevenue") != null) { %>
-                    <p>Total Revenue: $<%= request.getAttribute("totalRevenue") %></p>
-                <% } %>
+                <c:if test="${not empty totalRevenue}">
+                    <p>Total Revenue: $<c:out value="${totalRevenue}"/></p>
+                </c:if>
             </div>
         </div>
     </div>
     <jsp:include page="/frontend/common/footer.jsp" />
 </body>
 </html>
-

@@ -16,34 +16,46 @@ import jakarta.servlet.http.HttpServletResponse;
 
 @WebServlet("/ReportsAnalytics")
 public class ReportsAnalytics extends HttpServlet {
-     @Override
+    
+    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         ReportDAO reportDAO = new ReportDAO();
         
         // Lấy dữ liệu báo cáo
-        Map<String, Integer> contractStatusCounts = reportDAO.getContractStatusCounts();
-        int totalProblems = reportDAO.getTotalTransportProblems();
-        Map<Integer, Integer> topProblemSolvers = reportDAO.getTopProblemSolvers();
+        int totalProblemsUnresolved = reportDAO.getTotalTransportProblemsUnresolved();  // Tổng số Transport Problems chưa giải quyết
         
-        // Thêm dữ liệu vào request scope
-        request.setAttribute("contractStatusCounts", contractStatusCounts);
-        request.setAttribute("totalProblems", totalProblems);
-        request.setAttribute("topProblemSolvers", topProblemSolvers);
+        // Lấy số liệu tổng số Checking Forms theo trạng thái
+        int totalPendingCheckingForms = reportDAO.getTotalCheckingFormsByStatus("Pending");
+        int totalApprovedCheckingForms = reportDAO.getTotalCheckingFormsByStatus("Approved");
         
-        // Chuyển hướng sang trang JSP
+        // Lấy số liệu tổng số Contracts theo trạng thái
+        int totalPendingContracts = reportDAO.getTotalContractsByStatus("Pending");
+        int totalCompletedContracts = reportDAO.getTotalContractsByStatus("Completed");
+        
+        // Đặt dữ liệu vào request scope
+        request.setAttribute("totalProblemsUnresolved", totalProblemsUnresolved);
+        request.setAttribute("totalPendingCheckingForms", totalPendingCheckingForms);
+        request.setAttribute("totalApprovedCheckingForms", totalApprovedCheckingForms);
+        request.setAttribute("totalPendingContracts", totalPendingContracts);
+        request.setAttribute("totalCompletedContracts", totalCompletedContracts);
+        
+        // Chuyển hướng sang trang JSP báo cáo
         request.getRequestDispatcher("/frontend/view/manager/reportsAnalytics.jsp").forward(request, response);
     }
     
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        // Lấy khoảng thời gian từ form báo cáo doanh thu
         String startDate = request.getParameter("startDate");
         String endDate = request.getParameter("endDate");
-        ReportDAO reportDAO = new ReportDAO();
         
+        ReportDAO reportDAO = new ReportDAO();
         double totalRevenue = reportDAO.getTotalRevenue(startDate, endDate);
+        
+        // Đặt doanh thu vào request scope
         request.setAttribute("totalRevenue", totalRevenue);
         
-        // Gửi dữ liệu lại trang JSP
+        // Gọi doGet để cập nhật toàn bộ báo cáo và hiển thị lại trang JSP
         doGet(request, response);
     }
 }

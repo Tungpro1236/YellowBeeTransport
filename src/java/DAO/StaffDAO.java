@@ -1,4 +1,4 @@
-/*
+    /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
@@ -51,6 +51,83 @@ public class StaffDAO extends DBContext {
         }
         return staffList;
     }
+    
+    public List<Staff> getAllSurveyStaff() {
+    List<Staff> staffList = new ArrayList<>();
+    String query = "SELECT s.StaffID, u.FullName, u.Phone, u.Email, s.IsAvailable, "
+                 + "(SELECT TOP 1 c.ContractID FROM ArrangeStaff ast "
+                 + "JOIN Contracts c ON ast.ContractID = c.ContractID "
+                 + "WHERE ast.StaffID = s.StaffID ORDER BY c.ContractDate DESC) AS CurrentContractID, "
+                 + "(SELECT TOP 1 cf.CheckingFormID FROM CheckingForm cf "
+                 + "WHERE cf.StaffID = s.StaffID ORDER BY cf.CheckingTime DESC) AS CurrentCheckingFormID "
+                 + "FROM Staff s "
+                 + "JOIN Users u ON s.UserID = u.UserID "
+                 + "WHERE u.RoleID = 1";
+
+    try (PreparedStatement statement = connection.prepareStatement(query);
+         ResultSet result = statement.executeQuery()) {
+        while (result.next()) {
+            Integer currentContractID = result.getObject("CurrentContractID") != null ? result.getInt("CurrentContractID") : null;
+            Integer currentCheckingFormID = result.getObject("CurrentCheckingFormID") != null ? result.getInt("CurrentCheckingFormID") : null;
+
+            Staff staff = new Staff(
+                result.getInt("StaffID"),
+                0, // userID không cần thiết
+                0, // priceCostID không cần thiết
+                result.getBoolean("IsAvailable"),
+                2, // RoleID = 2 cho Moving Staff
+                result.getString("FullName"),
+                result.getString("Phone"),
+                result.getString("Email"),
+                currentContractID,
+                currentCheckingFormID
+            );
+            staffList.add(staff);
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return staffList;
+}
+    
+    public List<Staff> getAllMovingStaff() {
+    List<Staff> movingStaffList = new ArrayList<>();
+    String query = "SELECT s.StaffID, u.FullName, u.Phone, u.Email, s.IsAvailable, "
+                 + "(SELECT TOP 1 c.ContractID FROM ArrangeStaff ast "
+                 + "JOIN Contracts c ON ast.ContractID = c.ContractID "
+                 + "WHERE ast.StaffID = s.StaffID ORDER BY c.ContractDate DESC) AS CurrentContractID, "
+                 + "(SELECT TOP 1 cf.CheckingFormID FROM CheckingForm cf "
+                 + "WHERE cf.StaffID = s.StaffID ORDER BY cf.CheckingTime DESC) AS CurrentCheckingFormID "
+                 + "FROM Staff s "
+                 + "JOIN Users u ON s.UserID = u.UserID "
+                 + "WHERE u.RoleID = 2";
+
+    try (PreparedStatement statement = connection.prepareStatement(query);
+         ResultSet result = statement.executeQuery()) {
+        while (result.next()) {
+            Integer currentContractID = result.getObject("CurrentContractID") != null ? result.getInt("CurrentContractID") : null;
+            Integer currentCheckingFormID = result.getObject("CurrentCheckingFormID") != null ? result.getInt("CurrentCheckingFormID") : null;
+
+            Staff staff = new Staff(
+                result.getInt("StaffID"),
+                0, // userID không cần thiết trong DAO này
+                0, // priceCostID không cần thiết trong DAO này
+                result.getBoolean("IsAvailable"),
+                2, // RoleID = 2 cho Moving Staff
+                result.getString("FullName"),
+                result.getString("Phone"),
+                result.getString("Email"),
+                currentContractID,
+                currentCheckingFormID
+            );
+            movingStaffList.add(staff);
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return movingStaffList;
+}
+
 
     // Lấy toàn bộ danh sách nhân viên từ bảng Users
     public List<Staff> getAllStaff() {
@@ -84,7 +161,7 @@ public class StaffDAO extends DBContext {
         String sql = "SELECT u.UserID, u.FullName, u.Phone, u.Email "
                 + "FROM Users u "
                 + "WHERE u.RoleID = 1 "
-                + "AND NOT EXISTS (SELECT 1 FROM CheckingForm cf WHERE cf.AssignedStaffID = u.UserID)";
+                + "AND NOT EXISTS (SELECT 1 FROM CheckingForm cf WHERE cf.AstaffID = u.UserID)";
         try (PreparedStatement ps = connection.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 Staff staff = new Staff(

@@ -18,6 +18,14 @@ public class Truck {
         this.licensePlate = licensePlate;
         this.truckImage = truckImage;
     }
+    
+    public Truck(int truckID, int truckTypeID, String licensePlate, String truckImage, Integer currentContractID) {
+        this.truckID = truckID;
+        this.truckTypeID = truckTypeID;
+        this.licensePlate = licensePlate;
+        this.truckImage = truckImage;
+        this.currentContractID = currentContractID;
+    }
 
     // Getter và Setter
     public int getTruckID() {

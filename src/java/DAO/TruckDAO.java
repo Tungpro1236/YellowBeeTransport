@@ -26,24 +26,35 @@ public class TruckDAO {
 
     // Lấy danh sách tất cả xe
     public List<Truck> getAllTrucks() {
-        List<Truck> truckList = new ArrayList<>();
-        String sql = "SELECT TruckID, TruckTypeID, LicensePlate, TruckImage FROM Trucks";
-        try (PreparedStatement ps = connection.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
-            while (rs.next()) {
-                Truck truck = new Truck(
-                    rs.getInt("TruckID"),
-                    rs.getInt("TruckTypeID"),
-                    rs.getString("LicensePlate"),
-                    rs.getString("TruckImage")
-                );
-                truckList.add(truck);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+    List<Truck> truckList = new ArrayList<>();
+    String sql = "SELECT t.TruckID, t.TruckTypeID, t.LicensePlate, t.TruckImage, " +
+                 "(SELECT TOP 1 at.ContractID " +
+                 " FROM ArrangeTruck at " +
+                 " JOIN Contracts c ON at.ContractID = c.ContractID " +
+                 " WHERE at.TruckID = t.TruckID " +
+                 " ORDER BY c.ContractDate DESC) AS CurrentContractID " +
+                 "FROM Trucks t";
+
+    try (PreparedStatement ps = connection.prepareStatement(sql);
+         ResultSet rs = ps.executeQuery()) {
+        while (rs.next()) {
+            Integer currentContractID = rs.getObject("CurrentContractID") != null ? rs.getInt("CurrentContractID") : null;
+
+            Truck truck = new Truck(
+                rs.getInt("TruckID"),
+                rs.getInt("TruckTypeID"),
+                rs.getString("LicensePlate"),
+                rs.getString("TruckImage"),
+                currentContractID  // Lưu Contract ID dạng Integer
+            );
+            truckList.add(truck);
         }
-        return truckList;
+    } catch (Exception e) {
+        e.printStackTrace();
     }
+    return truckList;
+}
+
     
     // Lấy danh sách xe khả dụng (chưa có trong hợp đồng)
 public List<Truck> getAvailableTrucks() {
@@ -51,7 +62,7 @@ public List<Truck> getAvailableTrucks() {
     String sql = "SELECT t.TruckID, t.TruckTypeID, tt.TruckPayload, t.LicensePlate, t.TruckImage, t.CurrentContractID "
                + "FROM Trucks t "
                + "JOIN TruckType tt ON t.TruckTypeID = tt.TruckTypeID "
-               + "WHERE NOT EXISTS (SELECT 1 FROM Contracts c WHERE c.TruckID = t.TruckID)";
+               + "WHERE NOT EXISTS (SELECT 1 FROM ArrangeTruck atr WHERE atr.TruckID = t.TruckID)";
     
     try (PreparedStatement ps = connection.prepareStatement(sql);
          ResultSet rs = ps.executeQuery()) {

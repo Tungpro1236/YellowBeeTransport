@@ -17,7 +17,7 @@ import java.sql.Timestamp;
 @Builder
 public class CheckingForm {
     private int checkingFormID;
-    private int customerID;
+    private int userID;
     private String name;
     private String phone;
     private String email;
@@ -26,5 +26,5 @@ public class CheckingForm {
     private Timestamp transportTime;
     private int serviceID;
     private String status;
-    private int assignedStaffID;
+    private int staffID;
 }

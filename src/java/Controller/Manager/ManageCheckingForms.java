@@ -37,7 +37,7 @@ public class ManageCheckingForms extends HttpServlet {
         List<CheckingForm> rejectedForms = checkingFormDAO.getCheckingFormsByStatus("Rejected");
 
         // Lấy danh sách nhân viên rảnh
-        List<Staff> staffList = checkingFormDAO.getAvailableStaff();
+        List<Staff> staffList = checkingFormDAO.getAvailableSurveyStaff();
 
         System.out.println("Danh sách nhân viên rảnh:");
         if (staffList != null) {
@@ -59,24 +59,31 @@ public class ManageCheckingForms extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String action = request.getParameter("action");
+protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    String action = request.getParameter("action");
+    int checkingFormID = Integer.parseInt(request.getParameter("checkingFormID"));
 
-        System.out.println("Action: " + action);
-        System.out.println("Checking Form ID: " + request.getParameter("checkingFormID"));
-        System.out.println("Staff ID: " + request.getParameter("staffID"));
+    if ("approve".equals(action)) {
+    CheckingForm form = checkingFormDAO.getCheckingFormByID(checkingFormID);
+    List<Staff> availableSurveyStaff = checkingFormDAO.getAvailableSurveyStaff();
 
-        if ("approve".equals(action)) {
-            int checkingFormID = Integer.parseInt(request.getParameter("checkingFormID"));
-            int staffID = Integer.parseInt(request.getParameter("staffID"));
-            checkingFormDAO.assignStaffToCheckingForm(checkingFormID, staffID);
-            checkingFormDAO.updateCheckingFormStatus(checkingFormID, "Approved");
-        } else if ("reject".equals(action)) {
-            int checkingFormID = Integer.parseInt(request.getParameter("checkingFormID"));
-            checkingFormDAO.updateCheckingFormStatus(checkingFormID, "Rejected");
-        }
+    request.setAttribute("checkingForm", form);
+    request.setAttribute("availableSurveyStaff", availableSurveyStaff);
+    
+    request.getRequestDispatcher("/frontend/view/manager/confirmCheckingForm.jsp").forward(request, response);
+    return;
+}
 
-        // Reload danh sách sau khi thực hiện action
-        response.sendRedirect("ManageCheckingForms");
+    if ("confirmAssign".equals(action)) {
+        int staffID = Integer.parseInt(request.getParameter("staffID"));
+        checkingFormDAO.assignStaffToCheckingForm(checkingFormID, staffID);
+        checkingFormDAO.updateCheckingFormStatus(checkingFormID, "Approved");
+    } else if ("reject".equals(action)) {
+        checkingFormDAO.updateCheckingFormStatus(checkingFormID, "Rejected");
     }
+
+    // Reload danh sách sau khi thực hiện action
+    response.sendRedirect("ManageCheckingForms");
+}
+
 }

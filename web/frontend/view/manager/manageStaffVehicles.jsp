@@ -34,8 +34,8 @@
                 <div class="col-md-9">
                     <h3 class="text-center">Manage Staff & Vehicles</h3>
                     
-                    <!-- Staff Table -->
-                    <h4>Staff List</h4>
+                    <!-- Survey Staff Table -->
+                    <h4>Survey Staff</h4>
                     <table class="table table-bordered">
                         <thead>
                             <tr>
@@ -43,24 +43,20 @@
                                 <th>Name</th>
                                 <th>Phone</th>
                                 <th>Email</th>
-                                <th>Status</th>
-                                <th>Current Contract</th>
                                 <th>Current Checking Form</th>
                             </tr>
                         </thead>
                         <tbody>
                             <% 
-                                List<Staff> staffList = (List<Staff>) request.getAttribute("staffList");
-                                if (staffList != null) {
-                                    for (Staff staff : staffList) {
+                                List<Staff> surveyStaffList = (List<Staff>) request.getAttribute("surveyStaffList");
+                                if (surveyStaffList != null && !surveyStaffList.isEmpty()) {
+                                    for (Staff staff : surveyStaffList) {
                             %>
                             <tr>
                                 <td><%= staff.getStaffID() %></td>
                                 <td><%= staff.getFullName() %></td>
                                 <td><%= staff.getPhone() %></td>
                                 <td><%= staff.getEmail() %></td>
-                                <td><%= staff.isAvailable() ? "Available" : "Busy" %></td>
-                                <td><%= (staff.getCurrentContractID() != null) ? "Contract #" + staff.getCurrentContractID() : "None" %></td>
                                 <td><%= (staff.getCurrentCheckingFormID() != null) ? "CheckingForm #" + staff.getCurrentCheckingFormID() : "None" %></td>
                             </tr>
                             <% 
@@ -68,7 +64,43 @@
                                 } else { 
                             %>
                             <tr>
-                                <td colspan="7" class="text-center">No staff available</td>
+                                <td colspan="7" class="text-center">No survey staff available</td>
+                            </tr>
+                            <% } %>
+                        </tbody>
+                    </table>
+
+                    <!-- Moving Staff Table -->
+                    <h4>Moving Staff</h4>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Staff ID</th>
+                                <th>Name</th>
+                                <th>Phone</th>
+                                <th>Email</th>
+                                <th>Current Contract</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% 
+                                List<Staff> movingStaffList = (List<Staff>) request.getAttribute("movingStaffList");
+                                if (movingStaffList != null && !movingStaffList.isEmpty()) {
+                                    for (Staff staff : movingStaffList) {
+                            %>
+                            <tr>
+                                <td><%= staff.getStaffID() %></td>
+                                <td><%= staff.getFullName() %></td>
+                                <td><%= staff.getPhone() %></td>
+                                <td><%= staff.getEmail() %></td>
+                                <td><%= (staff.getCurrentContractID() != null) ? "Contract #" + staff.getCurrentContractID() : "None" %></td>
+                            </tr>
+                            <% 
+                                    }
+                                } else { 
+                            %>
+                            <tr>
+                                <td colspan="7" class="text-center">No moving staff available</td>
                             </tr>
                             <% } %>
                         </tbody>
@@ -88,7 +120,7 @@
                         <tbody>
                             <% 
                                 List<Truck> truckList = (List<Truck>) request.getAttribute("truckList");
-                                if (truckList != null) {
+                                if (truckList != null && !truckList.isEmpty()) {
                                     for (Truck truck : truckList) {
                             %>
                             <tr>

@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package Model;
 
 public class Staff {
@@ -13,8 +9,8 @@ public class Staff {
     private String fullName; 
     private String phone;
     private String email;
-    private Integer currentContractID; // Nhân viên đang đi hợp đồng nào
-    private Integer currentCheckingFormID; // Nhân viên đang khảo sát CheckingForm nào
+    private Integer currentContractID; 
+    private Integer currentCheckingFormID; 
 
     // Constructor 1: Dùng trong một số DAO cũ
     public Staff(int staffID, int userID, int priceCostID, String fullName) {
@@ -32,7 +28,7 @@ public class Staff {
         this.isAvailable = isAvailable;
     }
 
-    // Constructor 3: Đầy đủ thông tin để hiển thị danh sách nhân viên
+    // Constructor 3: Đầy đủ thông tin (cũ)
     public Staff(int staffID, int userID, int priceCostID, boolean isAvailable, int roleID, String fullName, String phone, String email, Integer currentContractID, Integer currentCheckingFormID) {
         this.staffID = staffID;
         this.userID = userID;
@@ -45,6 +41,7 @@ public class Staff {
         this.currentContractID = currentContractID;
         this.currentCheckingFormID = currentCheckingFormID;
     }
+
 
     // Getter và Setter
     public int getStaffID() {
@@ -126,4 +123,6 @@ public class Staff {
     public void setCurrentCheckingFormID(Integer currentCheckingFormID) {
         this.currentCheckingFormID = currentCheckingFormID;
     }
+
+   
 }

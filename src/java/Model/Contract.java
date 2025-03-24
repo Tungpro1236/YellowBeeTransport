@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import java.util.Date;
 
 /**
  *
@@ -21,23 +22,24 @@ public class Contract {
     private int contractId;
     private int checkingFormId;
     private int priceQuoteId;
-    private int truckId;
-    private int staffId;
     private double finalCost;
     private int contractStatusId;
+    private Date contractDate; // Ngày tạo hợp đồng
+    private String statusDescription; // Mô tả trạng thái hợp đồng
+    private String staffNames; // Danh sách nhân viên thực hiện hợp đồng
+    private String licensePlates; // Danh sách xe tải thực hiện hợp đồng
     
     private String licensePlate;
     private CheckingForm checkingForm;
 
     // Constructor giữ nguyên từ bản cũ để tránh xung đột
-    public Contract(int contractID, int checkingFormID, int priceQuoteID, int truckID, int staffID, double finalCost, int contractStatusID) {
+    public Contract(int contractID, int checkingFormID, int priceQuoteID, double finalCost, int contractStatusID) {
         this.contractId = contractID;
         this.checkingFormId = checkingFormID;
         this.priceQuoteId = priceQuoteID;
-        this.truckId = truckID;
-        this.staffId = staffID;
         this.finalCost = finalCost;
         this.contractStatusId = contractStatusID;
     }
 }
+
 
