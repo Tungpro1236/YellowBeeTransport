@@ -7,24 +7,21 @@ package DAO;
 import DBConnect.DBContext;
 import Model.CheckingForm;
 import Model.Contract;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.math.BigDecimal;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+
 import java.util.UUID;
 import java.sql.Statement;
 import java.util.stream.Collectors;
 
-/**
- *
- * @author regio
- */
+
 public class ContractDAO extends DBContext {
 
     public Contract getContractById(int contractId) {
         Contract contract = null;
+
         String query = "SELECT c.ContractID, c.PriceQuoteID, c.FinalCost, c.ContractStatusID, c.ContractDate, "
                 + "cf.Name AS CheckingUserName, cf.Phone AS CheckingUserPhone, cf.Email AS CheckingUserEmail, "
                 + "cf.Address AS CheckingUserAddress, cf.CheckingTime, cf.TransportTime, cf.ServiceID, cf.Status AS CheckingFormStatus, "
@@ -42,11 +39,31 @@ public class ContractDAO extends DBContext {
             statement.setInt(1, contractId);
             ResultSet result = statement.executeQuery();
 
+
+        String query = "SELECT c.ContractID, c.FinalCost, c.ContractStatusID, " +
+                "cf.CheckingTime, cf.TransportTime, " +
+                "GROUP_CONCAT(DISTINCT at.TruckID) AS TruckIDs, " +
+                "GROUP_CONCAT(DISTINCT ast.StaffID) AS StaffIDs, " +
+                "tp.ProblemCost " +
+                "FROM Contracts c " +
+                "JOIN CheckingForm cf ON c.CheckingFormID = cf.CheckingFormID " +
+                "LEFT JOIN ArrangeTruck at ON c.ContractID = at.ContractID " +
+                "LEFT JOIN ArrangeStaff ast ON c.ContractID = ast.ContractID " +
+                "LEFT JOIN TransportProblemForm tp ON c.ContractID = tp.ContractID " +
+                "WHERE c.ContractID = ? " +
+                "GROUP BY c.ContractID";
+        
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setInt(1, contractId);
+            ResultSet result = statement.executeQuery();
+            
+
             if (result.next()) {
                 CheckingForm checkingForm = CheckingForm.builder()
                         .checkingTime(result.getTimestamp("CheckingTime"))
                         .transportTime(result.getTimestamp("TransportTime"))
                         .build();
+
 
                 contract = Contract.builder()
                         .contractId(result.getInt("ContractID"))
@@ -98,9 +115,16 @@ public class ContractDAO extends DBContext {
                         .contractId(result.getInt("ContractID"))
                         .checkingFormId(result.getInt("CheckingFormID"))
                         .priceQuoteId(result.getInt("PriceQuoteID"))
+
+                
+                contract = Contract.builder()
+                        .contractId(result.getInt("ContractID"))
+
                         .finalCost(result.getDouble("FinalCost"))
                         .contractStatusId(result.getInt("ContractStatusID"))
+                        .checkingForm(checkingForm)
                         .build();
+
                 contracts.add(contract);
             }
 
@@ -122,34 +146,45 @@ public class ContractDAO extends DBContext {
             ResultSet result = statement.executeQuery();
             if (result.next()) {
                 count = result.getInt(1);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return count;
-    }
 
-    public int countContractsByStatus(int userId, int statusId) {
-        int count = 0;
-        String query = "SELECT COUNT(*) FROM Contracts c "
-                + "JOIN CheckingForm cf ON c.ContractID = cf.ContractID "
-                + "WHERE cf.UserID = ? AND c.ContractStatusID = ?";
-        try (PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setInt(1, userId);
-            statement.setInt(2, statusId);
-            ResultSet result = statement.executeQuery();
-            if (result.next()) {
-                count = result.getInt(1);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return count;
+        return contract;
     }
 
     public List<Contract> getAllContracts() {
-        List<Contract> contracts = new ArrayList<>();
-        String query = "SELECT * FROM Contracts";
+    List<Contract> contracts = new ArrayList<>();
+    String query = "SELECT c.ContractID, c.CheckingFormID, c.PriceQuoteID, c.FinalCost, c.ContractStatusID, " +
+                   "STRING_AGG(DISTINCT at.TruckID, ', ') AS TruckIDs, " +
+                   "STRING_AGG(DISTINCT ast.StaffID, ', ') AS StaffIDs " +
+                   "FROM Contracts c " +
+                   "LEFT JOIN ArrangeTruck at ON c.ContractID = at.ContractID " +
+                   "LEFT JOIN ArrangeStaff ast ON c.ContractID = ast.ContractID " +
+                   "GROUP BY c.ContractID, c.CheckingFormID, c.PriceQuoteID, c.FinalCost, c.ContractStatusID";
+
+    try (PreparedStatement statement = connection.prepareStatement(query);
+         ResultSet result = statement.executeQuery()) {
+        while (result.next()) {
+            Contract contract = new Contract(
+                result.getInt("ContractID"),
+                result.getInt("CheckingFormID"),
+                result.getInt("PriceQuoteID"),
+                result.getString("TruckIDs"),  // Lấy danh sách TruckID
+                result.getString("StaffIDs"),  // Lấy danh sách StaffID
+                result.getDouble("FinalCost"),
+                result.getInt("ContractStatusID")
+            );
+            contracts.add(contract);
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return contracts;
+}
+
+
 
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             ResultSet result = statement.executeQuery();
@@ -174,9 +209,34 @@ public class ContractDAO extends DBContext {
         String query = "SELECT c.ContractID, c.ContractDate, c.FinalCost, c.ContractStatusID, c.PriceQuoteID "
                 + "FROM Contracts c WHERE c.ContractStatusID = ?";
 
-        try (PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setInt(1, statusId);
-            ResultSet rs = statement.executeQuery();
+    public boolean createContract(int priceQuoteID, String[] truckIDs, String[] staffIDs, BigDecimal finalCost, int checkingFormID) {
+    String insertContractSQL = "INSERT INTO Contracts (PriceQuoteID, CheckingFormID, FinalCost, ContractStatusID, ContractDate) VALUES (?, ?, ?, ?, GETDATE());";
+    String insertTruckSQL = "INSERT INTO ArrangeTruck (ContractID, TruckID) VALUES (?, ?);";
+    String insertStaffSQL = "INSERT INTO ArrangeStaff (ContractID, StaffID) VALUES (?, ?);";
+
+    try (Connection conn = new DBContext().connection;
+         PreparedStatement psContract = conn.prepareStatement(insertContractSQL, Statement.RETURN_GENERATED_KEYS)) {
+        
+        psContract.setInt(1, priceQuoteID);
+        psContract.setInt(2, checkingFormID);
+        psContract.setBigDecimal(3, finalCost);
+        psContract.setInt(4, 1);  // 1 là ContractStatusID của "Pending"
+
+
+        int affectedRows = psContract.executeUpdate();
+        
+        if (affectedRows == 0) {
+            throw new SQLException("Creating contract failed, no rows affected.");
+        }
+        
+        ResultSet generatedKeys = psContract.getGeneratedKeys();
+        int contractID = -1;
+        if (generatedKeys.next()) {
+            contractID = generatedKeys.getInt(1);
+        } else {
+            throw new SQLException("Creating contract failed, no ContractID obtained.");
+        }
+
 
             while (rs.next()) {
                 Contract contract = Contract.builder()
@@ -215,25 +275,26 @@ public class ContractDAO extends DBContext {
                         .priceQuoteId(rs.getInt("PriceQuoteID"))
                         .build();
                 contracts.add(contract);
+
+        try (PreparedStatement psTruck = conn.prepareStatement(insertTruckSQL)) {
+            for (String truckID : truckIDs) {
+                psTruck.setInt(1, contractID);
+                psTruck.setInt(2, Integer.parseInt(truckID));
+                psTruck.addBatch();
+
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
+            psTruck.executeBatch();
         }
-        return contracts;
-    }
 
-    public boolean updateContractStatus(int contractId, int newStatus) {
-        String query = "UPDATE Contracts SET ContractStatusID = ? WHERE ContractID = ?";
-
-        try (PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setInt(1, newStatus);
-            statement.setInt(2, contractId);
-            return statement.executeUpdate() > 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
+        try (PreparedStatement psStaff = conn.prepareStatement(insertStaffSQL)) {
+            for (String staffID : staffIDs) {
+                psStaff.setInt(1, contractID);
+                psStaff.setInt(2, Integer.parseInt(staffID));
+                psStaff.addBatch();
+            }
+            psStaff.executeBatch();
         }
-        return false;
-    }
+
 
     public static void main(String[] args) {
         // Tạo đối tượng DAO
@@ -255,5 +316,13 @@ public class ContractDAO extends DBContext {
                         + ", Quote ID: " + contract.getPriceQuoteId());
             }
         }
+
+        return true;
+    } catch (SQLException e) {
+        e.printStackTrace();
+
     }
+    return false;
+}
+
 }

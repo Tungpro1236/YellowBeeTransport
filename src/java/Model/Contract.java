@@ -12,13 +12,14 @@ import lombok.NoArgsConstructor;
 
 /**
  *
- * @author regio
+ * @author regio & admin
  */
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
 @Builder
 public class Contract {
+
 
     int contractId;
     int checkingFormId;
@@ -27,8 +28,10 @@ public class Contract {
     double finalCost;
     int contractStatusId;
     
+
+  
+
     
-    
-    private String licensePlate;
-    private CheckingForm checkingForm;
+  
 }
+

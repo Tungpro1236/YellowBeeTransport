@@ -3,20 +3,20 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package Model;
-import java.sql.Timestamp;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-/**
- *
- * @author regio
- */
+
+import java.sql.Timestamp;
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
 @Builder
 public class CheckingForm {
+
     int userId;
     String name;
     String phone;
@@ -27,4 +27,15 @@ public class CheckingForm {
     int serviceId;
     int staffId;
     String status;
+     int checkingFormID;
+      int customerID;
+
+   
+  
+
+ 
+  
+   
+   
+
 }
