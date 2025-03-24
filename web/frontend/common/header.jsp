@@ -5,6 +5,10 @@
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ page import="Model.User" %> 
+<%
+    User user = (User) session.getAttribute("user");
+%>
 <!DOCTYPE html>
 <html>
     <head>
@@ -34,6 +38,80 @@
 
         <link rel="stylesheet" href="css/style.css">
         <!-- <link rel="stylesheet" href="css/responsive.css"> -->
+        <style>
+            .profile-avatar {
+                width: 36px;  /* Kích thước avatar */
+                height: 36px;
+                border-radius: 50%; /* Làm ảnh tròn */
+                object-fit: cover; /* Đảm bảo ảnh không bị méo */
+                cursor: pointer; /* Giữ khả năng click */
+                display: block; /* Loại bỏ khoảng trống dưới ảnh */
+                transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+            }
+            .profile-avatar:hover {
+                transform: scale(1.1);
+                box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+            }
+            /* Xóa viền hoặc hiệu ứng dropdown mặc định */
+            .profile-container .dropdown-toggle::after {
+                display: none !important;
+            }
+
+            /* Tùy chỉnh dropdown để không bị lệch */
+            .profile-container .dropdown-menu {
+                position: absolute;
+                top: 50px; /* Hiển thị ngay dưới avatar */
+                right: 0;
+                left: auto;
+                min-width: 180px;
+                background: white;
+                border-radius: 8px;
+                box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+                opacity: 0;
+                visibility: hidden;
+                transform: translateY(-10px);
+                transition: all 0.3s ease-in-out;
+                z-index: 1000;/* Điều chỉnh độ rộng */
+            }
+            .profile-container.show .dropdown-menu {
+                opacity: 1;
+                visibility: visible;
+                transform: translateY(0);
+            }
+
+            /* Tùy chỉnh item trong dropdown */
+            .dropdown-menu a {
+                padding: 10px 15px;
+                display: flex;
+                align-items: center;
+                text-decoration: none;
+                color: #333;
+                font-size: 14px;
+                transition: background 0.2s ease-in-out;
+            }
+
+            .dropdown-menu a i {
+                margin-right: 8px;
+                color: #007bff;
+            }
+
+            .dropdown-menu a:hover {
+                background: #f1f1f1;
+                border-radius: 8px;
+            }
+            .dropdown-menu {
+                display: block;
+                visibility: hidden;
+                opacity: 0;
+                transition: opacity 0.2s ease-in-out;
+            }
+
+            .show .dropdown-menu {
+                visibility: visible;
+                opacity: 1;
+            }
+
+        </style>
     </head>
     <body>
         <header>
@@ -69,12 +147,16 @@
                                     </div>
                                     <% } else { %>
                                     <!-- Nếu đã đăng nhập -->
-                                    <div class="user-avatar d-none d-lg-block dropdown">
-                                        <button class="btn btn-warning dropdown-toggle" type="button" id="userDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                            <%= username.substring(0, 1).toUpperCase() %>
-                                        </button>
-                                        <div class="dropdown-menu" aria-labelledby="userDropdown">
-                                            <!-- Điều hướng dashboard theo role -->
+                                    <div class="profile-container dropdown">
+                                        <img src="${user != null && user.image != null ? user.image : 'img/default-avatar.png'}" 
+                                             alt="Profile Picture" 
+                                             class="profile-avatar dropdown-toggle" 
+                                             id="userDropdown" 
+                                             data-toggle="dropdown" 
+                                             aria-haspopup="true" 
+                                             aria-expanded="false">
+
+                                        <div class="dropdown-menu" aria-labelledby="userDropdown">                                            <!-- Điều hướng dashboard theo role -->
                                             <% if ("Admin".equalsIgnoreCase(role)) { %>
                                             <a class="dropdown-item" href="admin_dashboard">
                                                 <i class="fa fa-dashboard"></i> Dashboard
@@ -131,7 +213,7 @@
                                                         <li><a href="service_detail?id=3">Trucks Rental</a></li>
                                                     </ul>
                                                 </li>
-                                                <li><a  href="price">Price</a></li>
+                                                <li><a href="price">Price</a></li>
                                                 <li><a href="about">about</a></li>
                                                 <li><a href="contact">Contact</a></li>
                                             </ul>

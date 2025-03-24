@@ -39,26 +39,17 @@
                             </tr>
                         </thead>
                         <tbody>
-                        <c:forEach var="quote" items="${quotes}">
+                        <c:forEach var="quote" items="${priceQuotes}">
                             <tr>
-                                <td>${quote.quoteId}</td>
-                                <td>${quote.price} VND</td>
+                                <td>${quote.priceQuoteId}</td>
+                                <td>${quote.finalCost} VND</td>
+                                <td>${quote.status}</td>
                                 <td>
-                                    <span class="badge badge-${quote.status == 'pending' ? 'warning' : (quote.status == 'accepted' ? 'success' : 'danger')}">
-                                        ${quote.status}
-                                    </span>
-                                </td>
-                                <td>
-                            <c:if test="${quote.status == 'pending'}">
-                                <form action="customer_priceQuote" method="post" class="d-inline">
-                                    <input type="hidden" name="quoteId" value="${quote.quoteId}">
-                                    <input type="hidden" name="status" value="accepted">
-                                    <button type="submit" class="btn btn-success btn-sm">Accept</button>
-                                </form>
-                                <form action="customer_priceQuote" method="post" class="d-inline">
-                                    <input type="hidden" name="quoteId" value="${quote.quoteId}">
-                                    <input type="hidden" name="status" value="rejected">
-                                    <button type="submit" class="btn btn-danger btn-sm">Reject</button>
+                            <c:if test="${quote.status eq 'Pending'}">
+                                <form action="customer_priceQuote" method="post">
+                                    <input type="hidden" name="quoteId" value="${quote.priceQuoteId}">
+                                    <button type="submit" name="action" value="accept" class="btn btn-success">Accept</button>
+                                    <button type="submit" name="action" value="reject" class="btn btn-danger">Reject</button>
                                 </form>
                             </c:if>
                             </td>

@@ -36,8 +36,7 @@
     border-color: #ededed;
     color: #999;
     pointer-events: none; }
-    .nice-select.disabled:after {
-      border-color: #cccccc; }
+    
   .nice-select.wide {
     width: 100%; }
     .nice-select.wide .list {

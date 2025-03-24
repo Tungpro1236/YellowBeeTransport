@@ -63,7 +63,13 @@ public class CustomerRequest extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
+        HttpSession session = request.getSession();
+        String role = (String) session.getAttribute("role");
+        Integer userId = (Integer) session.getAttribute("userId");
+        if (role == null || !role.equals("Customer")) {
+            request.getRequestDispatcher("/frontend/view/access_denied.jsp").forward(request, response);
+            return;
+        }
         request.getRequestDispatcher("/frontend/view/customer/customer_request.jsp").forward(request, response);
     }
 
@@ -93,11 +99,10 @@ public class CustomerRequest extends HttpServlet {
         String phone = request.getParameter("phone");
         String email = request.getParameter("email");
         String address = request.getParameter("address");
-        int serviceId = Integer.parseInt(request.getParameter("serviceId"));
-        int staffId = Integer.parseInt(request.getParameter("staffId"));
+      
 
         // Định dạng thời gian theo chuẩn HTML datetime-local
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
+        
 
         // Lấy dữ liệu từ form
         String checkingTimeStr = request.getParameter("checkingTime");
@@ -110,22 +115,32 @@ public class CustomerRequest extends HttpServlet {
         }
 
         // Chuyển đổi từ String sang LocalDateTime rồi sang Timestamp
-        LocalDateTime checkingLocalDateTime = LocalDateTime.parse(checkingTimeStr, formatter);
-        LocalDateTime transportLocalDateTime = LocalDateTime.parse(transportTimeStr, formatter);
+        Timestamp checkingTime = null;
+        Timestamp transportTime = null;
 
-        Timestamp checkingTime = Timestamp.valueOf(checkingLocalDateTime);
-        Timestamp transportTime = Timestamp.valueOf(transportLocalDateTime);
+        try {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
+            LocalDateTime checkingLocalDateTime = LocalDateTime.parse(checkingTimeStr, formatter);
+            LocalDateTime transportLocalDateTime = LocalDateTime.parse(transportTimeStr, formatter);
+            checkingTime = Timestamp.valueOf(checkingLocalDateTime);
+            transportTime = Timestamp.valueOf(transportLocalDateTime);
+        } catch (Exception e) {
+            request.setAttribute("error", "Lỗi: Định dạng thời gian không hợp lệ!");
+            request.getRequestDispatcher("/frontend/view/customer/customer_request.jsp").forward(request, response);
+            return;
+        }
 
         // Gọi DAO để lưu vào database
         RequestDAO requestDAO = new RequestDAO();
-        boolean success = requestDAO.createCheckingForm(userId, name, phone, email, address, checkingTime, transportTime, serviceId, staffId);
+        boolean success = requestDAO.createCheckingForm(userId, name,
+                phone, email, address, checkingTime, transportTime);
 
         // Điều hướng sau khi xử lý xong
         if (success) {
             response.sendRedirect("customer_dashboard.jsp");  // Chuyển hướng đến trang thông báo thành công
         } else {
-            request.setAttribute("errorMessage", "Lỗi khi tạo yêu cầu khảo sát!");
-            request.getRequestDispatcher("customer_request.jsp").forward(request, response);
+            request.setAttribute("error", "Lỗi khi tạo yêu cầu khảo sát!");
+            request.getRequestDispatcher("/frontend/view/customer/customer_request.jsp").forward(request, response);
         }
     }
 

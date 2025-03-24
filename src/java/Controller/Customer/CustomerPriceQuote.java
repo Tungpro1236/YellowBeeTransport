@@ -87,28 +87,21 @@ public class CustomerPriceQuote extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         int quoteId = Integer.parseInt(request.getParameter("quoteId"));
-        String action = request.getParameter("action");
+        String action = request.getParameter("action"); // "accept" hoặc "reject"
 
-        if (action.equals("accept")) {
-            // Khách hàng chấp nhận -> Tạo hợp đồng
-            ContractDAO contractDAO = new ContractDAO();
-            boolean created = contractDAO.createContractFromQuote(quoteId);
+        RequestDAO requestDAO = new RequestDAO();
+        boolean success = false;
 
-            if (created) {
-                response.sendRedirect("customerPriceQuote");
-            } else {
-                response.getWriter().write("Lỗi khi tạo hợp đồng!");
-            }
-        } else if (action.equals("reject")) {
-            // Khách hàng từ chối -> Xóa hoặc vô hiệu hóa báo giá
-            RequestDAO dao = new RequestDAO();
-            boolean success = dao.rejectPriceQuote(quoteId);
+        if ("accept".equals(action)) {
+            success = requestDAO. createContractFromQuote(quoteId);
+        } else if ("reject".equals(action)) {
+            success = requestDAO.updatePriceQuoteStatus(quoteId, "Rejected");
+        }
 
-            if (success) {
-                response.sendRedirect("customerPriceQuote");
-            } else {
-                response.getWriter().write("Lỗi khi từ chối báo giá!");
-            }
+        if (success) {
+            response.sendRedirect("customer_dashboard.jsp?success=true");
+        } else {
+            response.sendRedirect("customer_dashboard.jsp?error=true");
         }
 
     }

@@ -103,9 +103,7 @@
                             <td><%= user.getRoleName() %></td>
                         </tr>
                     </table>
-                    <div class="mt-3">
-                        <a href="updateProfile" class="btn btn-primary">Edit Profile</a>
-                    </div>
+                    
                     <div class="text-left mt-3">
                         <a href="forgotPassword" class="btn btn-primary">Reset Password</a>
                     </div>

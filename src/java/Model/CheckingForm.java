@@ -16,15 +16,26 @@ import java.sql.Timestamp;
 @Data
 @Builder
 public class CheckingForm {
-    private int checkingFormID;
-    private int customerID;
-    private String name;
-    private String phone;
-    private String email;
-    private String address;
-    private Timestamp checkingTime;
-    private Timestamp transportTime;
-    private int serviceID;
-    private String status;
-    private int assignedStaffID;
+
+    int userId;
+    String name;
+    String phone;
+    String email;
+    String address;
+    Timestamp checkingTime;
+    Timestamp transportTime;
+    int serviceId;
+    int staffId;
+    String status;
+     int checkingFormID;
+      int customerID;
+
+   
+  
+
+ 
+  
+   
+   
+
 }

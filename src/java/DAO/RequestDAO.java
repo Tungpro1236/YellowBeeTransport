@@ -54,9 +54,10 @@ public class RequestDAO extends DBContext {
     }
 
     public int countPendingRequests(int userId) {
-        String query = "SELECT COUNT(*) FROM PriceQuote pq "
+        String query = "SELECT COUNT(pq.PriceQuoteID) "
+                + "FROM PriceQuote pq "
                 + "JOIN CheckingForm cf ON pq.CheckingFormID = cf.CheckingFormID "
-                + "WHERE cf.UserID = ? AND pq.FinalCost IS NULL";
+                + "WHERE cf.UserID = ? AND pq.Status = 'Pending'";
         try {
             statement = connection.prepareStatement(query);
             statement.setInt(1, userId);
@@ -107,8 +108,8 @@ public class RequestDAO extends DBContext {
 
     }
 
-    public boolean createCheckingForm(Integer userId, String name, String phone, String email, String address, Timestamp checkingTime, Timestamp transportTime, int serviceId, int staffId) {
-        String query = "INSERT INTO CheckingForm (UserID, Name, Phone, Email, Address, CheckingTime, TransportTime, ServiceID, Status, StaffID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?)";
+    public boolean createCheckingForm(Integer userId, String name, String phone, String email, String address, Timestamp checkingTime, Timestamp transportTime) {
+        String query = "INSERT INTO CheckingForm (UserID, Name, Phone, Email, Address, CheckingTime, TransportTime, Status) VALUES (?, ?, ?, ?, ?, ?, ?, 'pending')";
 
         try {
             statement = connection.prepareStatement(query);
@@ -127,8 +128,6 @@ public class RequestDAO extends DBContext {
             }
             statement.setTimestamp(6, checkingTime);
             statement.setTimestamp(7, transportTime);
-            statement.setInt(8, serviceId);
-            statement.setInt(9, staffId);
 
             return statement.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -137,15 +136,54 @@ public class RequestDAO extends DBContext {
         return false;
     }
 
-    public boolean rejectPriceQuote(int quoteId) {
-        String sql = "DELETE FROM PriceQuote WHERE PriceQuoteID = ?";
+    public boolean updatePriceQuoteStatus(int quoteId, String status) {
+        String sql = "UPDATE PriceQuote SET Status = ? WHERE PriceQuoteID = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setInt(1, quoteId);
-            int rowsDeleted = stmt.executeUpdate();
-            return rowsDeleted > 0;
+            stmt.setString(1, status);
+            stmt.setInt(2, quoteId);
+            int rowsUpdated = stmt.executeUpdate();
+            return rowsUpdated > 0;
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
         }
     }
+
+    public boolean createContractFromQuote(int quoteId) {
+        if (!updatePriceQuoteStatus(quoteId, "Accepted")) {
+            return false; // Nếu không thể cập nhật trạng thái báo giá, dừng lại
+        }
+
+        String sql = "INSERT INTO Contract (PriceQuoteID, ContractStatus) VALUES (?, 'Pending')";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, quoteId);
+            int rowsInserted = stmt.executeUpdate();
+
+            if (rowsInserted > 0) {
+                ResultSet generatedKeys = stmt.getGeneratedKeys();
+                if (generatedKeys.next()) {
+                    int contractId = generatedKeys.getInt(1);
+                    System.out.println("Contract created with ID: " + contractId);
+                }
+                return true;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    // Khởi tạo kết nối database
+    public static void main(String[] args) {
+        // Tạo đối tượng DAO
+        RequestDAO requestDAO = new RequestDAO();
+
+        // Test với một user ID cụ thể
+        int testUserId = 9; // Đổi ID tùy vào dữ liệu có sẵn trong DB
+
+        // Kiểm tra số lượng đơn báo giá đang chờ xử lý
+        int pendingRequests = requestDAO.countPendingRequests(testUserId);
+        System.out.println("Pending Requests for User " + testUserId + ": " + pendingRequests);
+    }
 }
+

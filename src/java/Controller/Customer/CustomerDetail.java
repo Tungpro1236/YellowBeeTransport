@@ -12,6 +12,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 /**
  *
@@ -57,14 +58,21 @@ public class CustomerDetail extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        HttpSession session = request.getSession();
+        String role = (String) session.getAttribute("role");
+        Integer userId = (Integer) session.getAttribute("userId");
+        if (role == null || !role.equals("Customer")) {
+            request.getRequestDispatcher("/frontend/view/access_denied.jsp").forward(request, response);
+            return;
+        }
         // Lấy contractId từ request và kiểm tra hợp lệ
         String contractIdParam = request.getParameter("id");
-        int contractId = -1;
+        int contractId;
 
         try {
             contractId = Integer.parseInt(contractIdParam);
         } catch (NumberFormatException e) {
-            response.sendRedirect("contracts-list"); // Nếu ID không hợp lệ, quay về danh sách hợp đồng
+            response.sendRedirect("customer_contracts"); // Nếu ID không hợp lệ, quay về danh sách hợp đồng
             return;
         }
 
@@ -79,7 +87,7 @@ public class CustomerDetail extends HttpServlet {
 
         // Đặt dữ liệu vào request và chuyển tiếp đến JSP
         request.setAttribute("contract", contract);
-        request.getRequestDispatcher("/frontend/customer/customerDetail.jsp").forward(request, response);
+        request.getRequestDispatcher("/frontend/customer/customer_contractDetail.jsp").forward(request, response);
     }
 
     /**

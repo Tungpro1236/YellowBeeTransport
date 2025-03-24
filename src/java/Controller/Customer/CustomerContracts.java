@@ -12,7 +12,10 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -58,19 +61,29 @@ public class CustomerContracts extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        HttpSession session = request.getSession();
+        String role = (String) session.getAttribute("role");
+        Integer userId = (Integer) session.getAttribute("userId");
+        if (role == null || !role.equals("Customer")) {
+            request.getRequestDispatcher("/frontend/view/access_denied.jsp").forward(request, response);
+            return;
+        }
         ContractDAO contractDAO = new ContractDAO();
-        List<Contract> contracts;
-
-        // Lọc theo trạng thái nếu có
         String statusParam = request.getParameter("status");
-        if (statusParam != null) {
-            int status = Integer.parseInt(statusParam);
-            contracts = contractDAO.getContractsByStatus(status);
+        List<Contract> contracts;
+        
+        if (statusParam == null || statusParam.equals("1,2,3")) {
+            // Nếu không có status hoặc chọn tất cả, lấy hợp đồng có trạng thái 1, 2, 3
+            contracts = contractDAO.getContractsByMultipleStatus(Arrays.asList(1, 2, 3));
         } else {
-            contracts = contractDAO.getAllContracts();
+            List<Integer> statusList = Arrays.stream(statusParam.split(","))
+                    .map(Integer::parseInt)
+                    .collect(Collectors.toList());
+            contracts = contractDAO.getContractsByMultipleStatus(statusList);
         }
 
         request.setAttribute("contracts", contracts);
+        request.setAttribute("selectedStatus", statusParam);
         request.getRequestDispatcher("/frontend/view/customer/customer_contracts.jsp").forward(request, response);
     }
 
