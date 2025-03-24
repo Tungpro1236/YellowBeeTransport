@@ -27,8 +27,9 @@
         background: #2c3e50;
         padding: 10px;
         color: white;
-        border-radius: 5px;
+        border-radius: 10px;
         height: fit-content;
+        box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2); /* Đổ bóng */
     }
     .sidebar ul {
         list-style: none;
@@ -44,29 +45,36 @@
         display: block;
         padding: 10px;
         background: #FFA500;
-        border-radius: 5px;
-        transition: 0.3s;
+        border-radius: 8px;
+        transition: background 0.3s ease-in-out, transform 0.2s ease-in-out;
     }
     .sidebar ul li a:hover {
         background: #1abc9c;
+        transform: scale(1.05); /* Nhấn nhẹ khi hover */
     }
 
     /* Dropdown menu */
-     .dropdown {
+    .dropdown {
         position: relative;
     }
 
     .dropdown-content {
-        display: none;
         position: absolute;
         left: 100%; /* Dịch sang phải */
-        top: 10px; /* Cách menu chính một chút */
+        top: 0;
         min-width: 150px;
         background: #f39c12;
-        border-radius: 5px;
+        border-radius: 8px;
         overflow: hidden;
         z-index: 1;
         text-align: center;
+        box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2); /* Đổ bóng */
+
+        /* Hiệu ứng ẩn */
+        opacity: 0;
+        transform: translateY(10px);
+        transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+        visibility: hidden;
     }
 
     .dropdown-content a {
@@ -76,6 +84,7 @@
         text-decoration: none;
         white-space: nowrap; /* Giữ nội dung không xuống dòng */
         text-align: center;
+        transition: background 0.3s ease-in-out;
     }
 
     .dropdown-content a:hover {
@@ -84,6 +93,9 @@
 
     /* Hiển thị dropdown khi hover */
     .dropdown:hover .dropdown-content {
-        display: block;
+        opacity: 1;
+        transform: translateY(0);
+        visibility: visible;
     }
+
 </style>

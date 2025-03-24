@@ -26,4 +26,5 @@ public class CheckingForm {
     Timestamp transportTime;
     int serviceId;
     int staffId;
+    String status;
 }

@@ -36,7 +36,6 @@
         <servlet-name>ResetpasswordController</servlet-name>
         <servlet-class>Auther.resetPasswordController</servlet-class>
     </servlet>
-    
     <servlet>
         <servlet-name>ProfileController</servlet-name>
         <servlet-class>Auther.ProfileController</servlet-class>
@@ -106,9 +105,10 @@
         <servlet-class>Controller.UserProfileServlet</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>UpdateProfile</servlet-name>
-        <servlet-class>Controller.UpdateProfile</servlet-class>
+        <servlet-name>HeaderServlet</servlet-name>
+        <servlet-class>Controller.HeaderServlet</servlet-class>
     </servlet>
+    
     <servlet-mapping>
         <servlet-name>HomePageServlet</servlet-name>
         <url-pattern>/homepage</url-pattern>
@@ -144,10 +144,6 @@
     <servlet-mapping>
         <servlet-name>ResetpasswordController</servlet-name>
         <url-pattern>/resetPassword</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>UpdateProfile</servlet-name>
-        <url-pattern>/updateProfile</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>ProfileController</servlet-name>
@@ -201,6 +197,10 @@
         <servlet-name>UserProfileServlet</servlet-name>
         <url-pattern>/userProfile</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>HeaderServlet</servlet-name>
+        <url-pattern>/headerServlet</url-pattern>
+    </servlet-mapping>
     
     <welcome-file-list>
         <welcome-file>homepage</welcome-file>
@@ -221,6 +221,4 @@
         <servlet-name>CustomerDashboardServlet</servlet-name>
         <url-pattern>/customer_dashboard</url-pattern>
     </servlet-mapping>
-    
-    
 </web-app>

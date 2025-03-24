@@ -5,20 +5,22 @@
             <url>web/frontend/common/header.jsp</url>
             <bookmark id="1">
                 <name/>
-                <line>90</line>
+                <line>172</line>
                 <key/>
             </bookmark>
         </file>
     </editor-bookmarks>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/regio/Documents/GitHub/YellowBeeTransport/src/java/DAO/UserDAO.java</file>
-            <file>file:/C:/Users/regio/Documents/GitHub/YellowBeeTransport/web/frontend/view/customer/customer_request.jsp</file>
-            <file>file:/C:/Users/regio/Documents/GitHub/YellowBeeTransport/src/java/Controller/UserProfileServlet.java</file>
+            <file>file:/C:/Users/regio/Documents/GitHub/YellowBeeTransport/src/java/Controller/Customer/CustomerDetail.java</file>
             <file>file:/C:/Users/regio/Documents/GitHub/YellowBeeTransport/web/WEB-INF/web.xml</file>
-            <file>file:/C:/Users/regio/Documents/GitHub/YellowBeeTransport/web/editProfile.jsp</file>
-            <file>file:/C:/Users/regio/Documents/GitHub/YellowBeeTransport/web/userProfile.jsp</file>
-            <file>file:/C:/Users/regio/Documents/GitHub/YellowBeeTransport/src/java/Controller/UpdateProfile.java</file>
+            <file>file:/C:/Users/regio/Documents/GitHub/YellowBeeTransport/src/java/Model/Contract.java</file>
+            <file>file:/C:/Users/regio/Documents/GitHub/YellowBeeTransport/web/frontend/view/customer/customer_contracts.jsp</file>
+            <file>file:/C:/Users/regio/Documents/GitHub/YellowBeeTransport/src/java/DAO/ContractDAO.java</file>
+            <file>file:/C:/Users/regio/Documents/GitHub/YellowBeeTransport/src/java/Controller/Customer/CustomerPriceQuote.java</file>
+            <file>file:/C:/Users/regio/Documents/GitHub/YellowBeeTransport/web/css/nice-select.css</file>
+            <file>file:/C:/Users/regio/Documents/GitHub/YellowBeeTransport/web/frontend/view/customer/customer_listPrQuote.jsp</file>
+            <file>file:/C:/Users/regio/Documents/GitHub/YellowBeeTransport/src/java/Controller/Customer/CustomerContracts.java</file>
         </group>
     </open-files>
 </project-private>

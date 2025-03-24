@@ -1,7 +1,7 @@
-	<%-- 
-    Document   : service
-    Created on : Feb 13, 2025, 7:37:02 AM
-    Author     : nguye
+<%-- 
+Document   : service
+Created on : Feb 13, 2025, 7:37:02 AM
+Author     : nguye
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
@@ -186,7 +186,7 @@
                             <i class="ti-tablet"></i>
                         </span>
                         <div class="media-body">
-                            <h3>+1 253 565 2365</h3>
+                            <h3>1601-609 6780</h3>
                             <p>Mon to Fri 9am to 6pm</p>
                         </div>
                     </div>
@@ -200,9 +200,18 @@
                         </div>
                     </div>
                 </div>
+                <iframe 
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3723.9947487775113!2d105.7643564153842!3d21.03557879284953!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3135ab108c791fa3%3A0x4f5e3c4fcb7b8a5!2zQsOhYyBU4burIFTDuCBMaWVuLCBIw6AgTuG7mWkgVmnhu4d0!5e0!3m2!1sen!2s!4v1710000000000" 
+                    width="100%" 
+                    height="300" 
+                    style="border:0;" 
+                    allowfullscreen="" 
+                    loading="lazy"></iframe>
             </div>
 
-            <jsp:include page="/frontend/common/footer.jsp" />
+            <div class="mt-5">
+                <jsp:include page="/frontend/common/footer.jsp" />
+            </div>
             <script src="js/vendor/modernizr-3.5.0.min.js"></script>
             <script src="js/vendor/jquery-1.12.4.min.js"></script>
             <script src="js/popper.min.js"></script>

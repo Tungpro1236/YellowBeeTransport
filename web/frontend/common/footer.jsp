@@ -37,73 +37,73 @@
     </head>
     <body>
         <footer class="footer">
-        <!-- contact_location  -->
-    <div class="contact_location">
-        <div class="container">
-            <div class="row">
-                <div class="col-xl-6 col-lg-6 col-md-6">
-                    <div class="location_left">
-                        <div class="logo">
-                            <a href="homepage">
-                                <img src="img/about/logo2.png" alt="" width="150" height="75">
-                            </a>
+            <!-- contact_location  -->
+            <div class="contact_location">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-xl-6 col-lg-6 col-md-6">
+                            <div class="location_left">
+                                <div class="logo">
+                                    <a href="homepage">
+                                        <img src="img/about/logo2.png" alt="" width="150" height="75">
+                                    </a>
+                                </div>
+                                <ul>
+                                    <li><a href="https://www.youtube.com/watch?v=STzK1XrpoBs"> <i class="fa fa-facebook"></i> </a></li>
+                                    <li><a href="https://www.youtube.com/watch?v=2YHcKPGEbSo"> <i class="fa fa-google-plus"></i> </a></li>
+                                    <li><a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"> <i class="fa fa-twitter"></i> </a></li>
+                                    <li><a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"> <i class="fa fa-youtube"></i> </a></li>
+                                </ul>
+                            </div>
                         </div>
-                        <ul>
-                            <li><a href="https://www.youtube.com/watch?v=STzK1XrpoBs"> <i class="fa fa-facebook"></i> </a></li>
-                            <li><a href="https://www.youtube.com/watch?v=2YHcKPGEbSo"> <i class="fa fa-google-plus"></i> </a></li>
-                            <li><a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"> <i class="fa fa-twitter"></i> </a></li>
-                            <li><a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"> <i class="fa fa-youtube"></i> </a></li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="col-xl-3 col-md-3">
-                    <div class="single_location">
-                        <h3> <img src="img/icon/address.svg" alt=""> Location</h3>
-                        <p>47, Pham Van Dong Road, Mai Dich, Bac Tu Liem, Hanoi</p>
-                    </div>
-                </div>
-                <div class="col-xl-3 col-md-3">
-                    <div class="single_location">
-                        <h3> <img src="img/icon/support.svg" alt=""> Contact</h3>
-                        <p>+10 267 3563 4562 <br>
-                            yellowbee@transport.com</p>
+                        <div class="col-xl-3 col-md-3">
+                            <div class="single_location">
+                                <h3> <img src="img/icon/address.svg" alt=""> Location</h3>
+                                <p>47, Pham Van Dong Road, Mai Dich, Bac Tu Liem, Hanoi</p>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-md-3">
+                            <div class="single_location">
+                                <h3> <img src="img/icon/support.svg" alt=""> Contact</h3>
+                                <p> 1601-609 6780 <br>
+                                    yellowbee@transport.com</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
-    </footer>
+        </footer>
     </body>
     <script src="js/vendor/modernizr-3.5.0.min.js"></script>
-        <script src="js/vendor/jquery-1.12.4.min.js"></script>
-        <script src="js/popper.min.js"></script>
-        <script src="js/bootstrap.min.js"></script>
-        <script src="js/owl.carousel.min.js"></script>
-        <script src="js/isotope.pkgd.min.js"></script>
-        <script src="js/ajax-form.js"></script>
-        <script src="js/waypoints.min.js"></script>
-        <script src="js/jquery.counterup.min.js"></script>
-        <script src="js/imagesloaded.pkgd.min.js"></script>
-        <script src="js/scrollIt.js"></script>
-        <script src="js/jquery.scrollUp.min.js"></script>
-        <script src="js/wow.min.js"></script>
-        <script src="js/nice-select.min.js"></script>
-        <script src="js/jquery.slicknav.min.js"></script>
-        <script src="js/jquery.magnific-popup.min.js"></script>
-        <script src="js/plugins.js"></script>
-        <!-- <script src="js/gijgo.min.js"></script> -->
-        <script src="js/slick.min.js"></script>
+    <script src="js/vendor/jquery-1.12.4.min.js"></script>
+    <script src="js/popper.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/owl.carousel.min.js"></script>
+    <script src="js/isotope.pkgd.min.js"></script>
+    <script src="js/ajax-form.js"></script>
+    <script src="js/waypoints.min.js"></script>
+    <script src="js/jquery.counterup.min.js"></script>
+    <script src="js/imagesloaded.pkgd.min.js"></script>
+    <script src="js/scrollIt.js"></script>
+    <script src="js/jquery.scrollUp.min.js"></script>
+    <script src="js/wow.min.js"></script>
+    <script src="js/nice-select.min.js"></script>
+    <script src="js/jquery.slicknav.min.js"></script>
+    <script src="js/jquery.magnific-popup.min.js"></script>
+    <script src="js/plugins.js"></script>
+    <!-- <script src="js/gijgo.min.js"></script> -->
+    <script src="js/slick.min.js"></script>
 
 
 
-        <!--contact js-->
-        <script src="js/contact.js"></script>
-        <script src="js/jquery.ajaxchimp.min.js"></script>
-        <script src="js/jquery.form.js"></script>
-        <script src="js/jquery.validate.min.js"></script>
-        <script src="js/mail-script.js"></script>
+    <!--contact js-->
+    <script src="js/contact.js"></script>
+    <script src="js/jquery.ajaxchimp.min.js"></script>
+    <script src="js/jquery.form.js"></script>
+    <script src="js/jquery.validate.min.js"></script>
+    <script src="js/mail-script.js"></script>
 
 
-        <script src="js/main.js"></script>
+    <script src="js/main.js"></script>
 
 </html>

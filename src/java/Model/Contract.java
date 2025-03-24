@@ -4,6 +4,7 @@
  */
 package Model;
 
+import java.util.Date;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -22,8 +23,7 @@ public class Contract {
     int contractId;
     int checkingFormId;
     int priceQuoteId;
-    int truckId;
-    int staffId;
+    Date contractDate;
     double finalCost;
     int contractStatusId;
     
