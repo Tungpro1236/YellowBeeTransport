@@ -5,8 +5,6 @@
 --%>
 
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@page import="java.util.List"%>
-<%@page import="Model.PriceQuote"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
@@ -33,13 +31,15 @@
                     <form method="post" action="ManagePriceQuotes">
                         <input type="hidden" name="action" value="confirm">
                         <input type="hidden" name="priceQuoteID" value="${priceQuoteID}">
-                        
-                        <h5>Checking Form ID: ${checkingFormID}</h5>
+                        <input type="hidden" name="checkingFormID" value="${checkingFormID}">
+                        <input type="hidden" name="finalCost" value="${finalCost}">
 
+                        <h5>Checking Form ID: ${checkingFormID}</h5>
                         <h5>Required Trucks: ${truckAmount}</h5>
                         <h5>Required Staff: ${staffAmount}</h5>
                         <h5>Final Cost: ${finalCost}</h5>
 
+                        <!-- Available Trucks -->
                         <h4>Available Trucks</h4>
                         <table class="table table-bordered">
                             <thead>
@@ -53,7 +53,7 @@
                             <tbody>
                                 <c:forEach var="truck" items="${availableTrucks}">
                                     <tr>
-                                        <td><input type="checkbox" name="selectedTrucks" value="${truck.truckID}"></td>
+                                        <td><input type="checkbox" class="truck-checkbox" name="selectedTrucks" value="${truck.truckID}"></td>
                                         <td>${truck.truckID}</td>
                                         <td>${truck.licensePlate}</td>
                                         <td>${truck.truckPayload}</td>
@@ -62,6 +62,7 @@
                             </tbody>
                         </table>
 
+                        <!-- Available Staff -->
                         <h4>Available Staff</h4>
                         <table class="table table-bordered">
                             <thead>
@@ -75,8 +76,8 @@
                             <tbody>
                                 <c:forEach var="staff" items="${availableStaff}">
                                     <tr>
-                                        <td><input type="checkbox" name="selectedStaff" value="${staff.userID}"></td>
-                                        <td>${staff.userID}</td>
+                                        <td><input type="checkbox" class="staff-checkbox" name="selectedStaff" value="${staff.staffID}"></td>
+                                        <td>${staff.staffID}</td>
                                         <td>${staff.fullName}</td>
                                         <td>${staff.phone}</td>
                                     </tr>
@@ -91,8 +92,29 @@
         </div>
 
         <jsp:include page="/frontend/common/footer.jsp" />
-        
+
         <script src="${pageContext.request.contextPath}/js/jquery-1.12.4.min.js"></script>
         <script src="${pageContext.request.contextPath}/js/bootstrap.min.js"></script>
+
+        <script>
+            $(document).ready(function () {
+                let maxTrucks = ${truckAmount};
+                let maxStaff = ${staffAmount};
+
+                $(".truck-checkbox").on("change", function () {
+                    if ($(".truck-checkbox:checked").length > maxTrucks) {
+                        alert("Bạn chỉ có thể chọn tối đa " + maxTrucks + " xe.");
+                        $(this).prop("checked", false);
+                    }
+                });
+
+                $(".staff-checkbox").on("change", function () {
+                    if ($(".staff-checkbox:checked").length > maxStaff) {
+                        alert("Bạn chỉ có thể chọn tối đa " + maxStaff + " nhân viên.");
+                        $(this).prop("checked", false);
+                    }
+                });
+            });
+        </script>
     </body>
 </html>

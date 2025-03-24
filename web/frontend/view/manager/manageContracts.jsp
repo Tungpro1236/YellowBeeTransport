@@ -3,7 +3,7 @@
     Created on : Mar 1, 2025, 8:37:39 AM
     Author     : admin
 --%>
-
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ page import="java.util.List" %>
 <%@ page import="Model.Contract" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
@@ -31,74 +31,70 @@
         <link rel="stylesheet" href="${pageContext.request.contextPath}/css/slicknav.css">
         <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
 
-            </head>
+    </head>
 
-    
+
     <body>
-    <jsp:include page="/frontend/common/header.jsp" />
+        <jsp:include page="/frontend/common/header.jsp" />
 
-    <div class="container mt-4">
-        <div class="row">
-            <div class="col-md-3">
-                <jsp:include page="/frontend/common/sidebar.jsp" />
-            </div>
+        <div class="container mt-4">
+            <div class="row">
+                <div class="col-md-3">
+                    <jsp:include page="/frontend/common/sidebar.jsp" />
+                </div>
 
-            <div class="col-md-9">
-                <h3 class="text-center">Manage Contracts</h3>
-                <table class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th>Contract ID</th>
-                            <th>Checking Form ID</th>
-                            <th>Price Quote ID</th>
-                            <th>Truck ID</th>
-                            <th>Staff ID</th>
-                            <th>Final Cost</th>
-                            <th>Contract Status ID</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <%
-                            List<Contract> contracts = (List<Contract>) request.getAttribute("contracts");
-                            if (contracts != null) {
-                                for (Contract contract : contracts) {
-                        %>
-                        <tr>
-                            <td><%= contract.getContractID() %></td>
-                            <td><%= contract.getCheckingFormID() %></td>
-                            <td><%= contract.getPriceQuoteID() %></td>
-                            <td><%= contract.getTruckID() %></td>
-                            <td><%= contract.getStaffID() %></td>
-                            <td><%= contract.getFinalCost() %></td>
-                            <td><%= contract.getContractStatusID() %></td>
-                        </tr>
-                        <% 
-                                }
-                            } else { 
-                        %>
-                        <tr>
-                            <td colspan="7" class="text-center">No contracts available</td>
-                        </tr>
-                        <% } %>
-                    </tbody>
-                </table>
+                <div class="col-md-9">
+                    <h3 class="text-center">Manage Contracts</h3>
+                    <c:choose>
+                        <c:when test="${not empty contracts}">
+                            <table border="1">
+                                <thead>
+                                    <tr>
+                                        <th>Contract ID</th>
+                                        <th>Checking Form ID</th>
+                                        <th>Price Quote ID</th>
+                                        <th>Truck IDs</th>
+                                        <th>Staff IDs</th>
+                                        <th>Final Cost</th>
+                                        <th>Contract Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <c:forEach var="contract" items="${contracts}">
+                                        <tr>
+                                            <td>${contract.contractID}</td>
+                                            <td>${contract.checkingFormID}</td>
+                                            <td>${contract.priceQuoteID}</td>
+                                            <td>${contract.truckID != null ? contract.truckID : "N/A"}</td>
+                                            <td>${contract.staffID != null ? contract.staffID : "N/A"}</td>
+                                            <td>${contract.finalCost}</td>
+                                            <td>${contract.contractStatusID}</td>
+                                        </tr>
+                                    </c:forEach>
+                                </tbody>
+                            </table>
+                        </c:when>
+                        <c:otherwise>
+                            <p style="color: red; font-weight: bold;">Không có hợp đồng nào được tìm thấy.</p>
+                        </c:otherwise>
+                    </c:choose>
+                </div>
             </div>
         </div>
-    </div>
 
 
         <jsp:include page="/frontend/common/footer.jsp" />
 
-         <script>
-        function confirmDelete(contractID) {
-            if (confirm("Are you sure you want to cancel this contract?")) {
-                document.getElementById("cancelForm" + contractID).submit();
+        <script>
+            function confirmDelete(contractID) {
+                if (confirm("Are you sure you want to cancel this contract?")) {
+                    document.getElementById("cancelForm" + contractID).submit();
+                }
             }
-        }
-    </script>
+        </script>
 
 
-        
+
         <script src="${pageContext.request.contextPath}/js/vendor/modernizr-3.5.0.min.js"></script>
         <script src="${pageContext.request.contextPath}/js/vendor/jquery-1.12.4.min.js"></script>
         <script src="${pageContext.request.contextPath}/js/popper.min.js"></script>

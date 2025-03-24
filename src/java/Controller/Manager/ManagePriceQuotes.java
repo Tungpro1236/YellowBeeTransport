@@ -17,6 +17,8 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.List;
 
 @WebServlet(name = "ManagePriceQuotes", urlPatterns = {"/ManagePriceQuotes"})
@@ -65,7 +67,11 @@ public class ManagePriceQuotes extends HttpServlet {
                 }
 
                 List<Truck> availableTrucks = truckDAO.getAvailableTrucks();
-                List<Staff> availableStaff = staffDAO.getAvailableStaff();
+                List<Staff> availableStaff = staffDAO.getAvailableMovingStaff();
+
+                System.out.println("checkingFormID: " + priceQuote.getCheckingFormID());
+                System.out.println("truckAmount " + priceQuote.getTruckAmount());
+                System.out.println("finalCost " + priceQuote.getFinalCost());
 
                 // Gửi thông tin Price Quote sang confirmContract.jsp
                 request.setAttribute("priceQuoteID", priceQuote.getPriceQuoteID());
@@ -82,8 +88,12 @@ public class ManagePriceQuotes extends HttpServlet {
             }
 
             if ("confirm".equals(action)) {
+                
                 String[] selectedTrucks = request.getParameterValues("selectedTrucks");
                 String[] selectedStaff = request.getParameterValues("selectedStaff");
+                
+                System.out.println("Selected Trucks: " + Arrays.toString(selectedTrucks));
+System.out.println("Selected Staff: " + Arrays.toString(selectedStaff));
 
                 if (selectedTrucks == null || selectedTrucks.length == 0
                         || selectedStaff == null || selectedStaff.length == 0) {
@@ -92,8 +102,11 @@ public class ManagePriceQuotes extends HttpServlet {
                     return;
                 }
 
+                BigDecimal finalCost = new BigDecimal(request.getParameter("finalCost"));
+                int checkingFormID = Integer.parseInt(request.getParameter("checkingFormID"));
+
                 ContractDAO contractDAO = new ContractDAO();
-                boolean success = contractDAO.createContract(priceQuoteID, selectedTrucks, selectedStaff);
+                boolean success = contractDAO.createContract(priceQuoteID, selectedTrucks, selectedStaff, finalCost, checkingFormID);
 
                 if (success) {
                     priceQuoteDAO.updateStatus(priceQuoteID, "Confirmed");

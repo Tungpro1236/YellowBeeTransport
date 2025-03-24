@@ -50,7 +50,7 @@ public class PriceQuoteDAO {
     }
 
     public boolean updateStatus(int priceQuoteID, String status) {
-        String sql = "UPDATE PriceQuotes SET Status = ? WHERE PriceQuoteID = ?";
+        String sql = "UPDATE PriceQuote SET Status = ? WHERE PriceQuoteID = ?";
 
         try {
             DBContext db = new DBContext();
@@ -129,8 +129,8 @@ public class PriceQuoteDAO {
     
     public PriceQuote getPriceQuoteByID(int priceQuoteID) {
     PriceQuote priceQuote = null;
-    String sql = "SELECT priceQuoteID, checkingFormID, truckAmount, staffAmount, finalCost " +
-                 "FROM PriceQuote WHERE priceQuoteID = ?";
+    String sql = "SELECT PriceQuoteID, CheckingFormID, TruckAmount, StaffAmount, FinalCost, PriceCostID " +
+                 "FROM PriceQuote WHERE PriceQuoteID = ?";
     
     try (Connection conn = new DBContext().connection;
          PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -140,15 +140,14 @@ public class PriceQuoteDAO {
         
         if (rs.next()) {
             priceQuote = new PriceQuote();
-            priceQuote.setPriceQuoteID(rs.getInt("priceQuoteID"));
-            priceQuote.setTruckAmount(rs.getInt("truckAmount"));
-            priceQuote.setStaffAmount(rs.getInt("staffAmount"));
-            priceQuote.setFinalCost(rs.getBigDecimal("finalCost"));
-            priceQuote.setPriceCostID(rs.getInt("priceCostID"));
-            priceQuote.setCheckingFormID(rs.getInt("checkingFormID"));
-            priceQuote.setStatus(rs.getString("status"));
+            priceQuote.setPriceQuoteID(rs.getInt("PriceQuoteID"));          
+            priceQuote.setTruckAmount(rs.getInt("TruckAmount"));
+            priceQuote.setStaffAmount(rs.getInt("StaffAmount"));
+            priceQuote.setFinalCost(rs.getBigDecimal("FinalCost"));
+            priceQuote.setPriceCostID(rs.getInt("PriceCostID"));
+            priceQuote.setCheckingFormID(rs.getInt("CheckingFormID"));
         }
-        
+               
     } catch (SQLException e) {
         e.printStackTrace();
     }

@@ -18,7 +18,7 @@ import DBConnect.DBContext;
  * @author regio & admin
  */
 public class StaffDAO extends DBContext {
-    
+
     private Connection connection;
 
     public StaffDAO() {
@@ -33,17 +33,16 @@ public class StaffDAO extends DBContext {
     // Lấy danh sách nhân viên khảo sát (Survey Staff)
     public List<Staff> getSurveyStaff() {
         List<Staff> staffList = new ArrayList<>();
-        String query = "SELECT s.StaffID, s.UserID, s.PriceCostID, u.Name " +
-                       "FROM Staff s JOIN Users u ON s.UserID = u.UserID";
+        String query = "SELECT s.StaffID, s.UserID, s.PriceCostID, u.Name "
+                + "FROM Staff s JOIN Users u ON s.UserID = u.UserID";
 
-        try (PreparedStatement stmt = connection.prepareStatement(query);
-             ResultSet rs = stmt.executeQuery()) {
+        try (PreparedStatement stmt = connection.prepareStatement(query); ResultSet rs = stmt.executeQuery()) {
             while (rs.next()) {
                 Staff staff = new Staff(
-                    rs.getInt("StaffID"),
-                    rs.getInt("UserID"),
-                    rs.getInt("PriceCostID"),
-                    rs.getString("Name")
+                        rs.getInt("StaffID"),
+                        rs.getInt("UserID"),
+                        rs.getInt("PriceCostID"),
+                        rs.getString("Name")
                 );
                 staffList.add(staff);
             }
@@ -57,15 +56,15 @@ public class StaffDAO extends DBContext {
     public List<Staff> getAllStaff() {
         List<Staff> staffList = new ArrayList<>();
         String sql = "SELECT u.UserID, u.FullName, u.Phone, u.Email, u.RoleID "
-                   + "FROM Users u "
-                   + "WHERE u.RoleID IN (1, 2)"; // Chỉ lấy nhân viên
+                + "FROM Users u "
+                + "WHERE u.RoleID IN (1, 2)"; // Chỉ lấy nhân viên
         try (PreparedStatement ps = connection.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 Staff staff = new Staff(
-                    0, // Không cần StaffID
-                    rs.getInt("UserID"),
-                    0, // Không cần PriceCostID
-                    true
+                        0, // Không cần StaffID
+                        rs.getInt("UserID"),
+                        0, // Không cần PriceCostID
+                        true
                 );
                 staff.setFullName(rs.getString("FullName"));
                 staff.setPhone(rs.getString("Phone"));
@@ -83,16 +82,16 @@ public class StaffDAO extends DBContext {
     public List<Staff> getAvailableStaff() {
         List<Staff> staffList = new ArrayList<>();
         String sql = "SELECT u.UserID, u.FullName, u.Phone, u.Email "
-                   + "FROM Users u "
-                   + "WHERE u.RoleID = 1 "
-                   + "AND NOT EXISTS (SELECT 1 FROM CheckingForm cf WHERE cf.AssignedStaffID = u.UserID)"; 
+                + "FROM Users u "
+                + "WHERE u.RoleID = 1 "
+                + "AND NOT EXISTS (SELECT 1 FROM CheckingForm cf WHERE cf.AssignedStaffID = u.UserID)";
         try (PreparedStatement ps = connection.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 Staff staff = new Staff(
-                    0,
-                    rs.getInt("UserID"),
-                    0,
-                    true
+                        0,
+                        rs.getInt("UserID"),
+                        0,
+                        true
                 );
                 staff.setFullName(rs.getString("FullName"));
                 staff.setPhone(rs.getString("Phone"));
@@ -109,16 +108,16 @@ public class StaffDAO extends DBContext {
     public List<Staff> getStaffInContracts() {
         List<Staff> staffList = new ArrayList<>();
         String sql = "SELECT u.UserID, u.FullName, u.Phone, u.Email, c.ContractID "
-                   + "FROM Users u "
-                   + "JOIN Contracts c ON u.UserID = c.StaffID "
-                   + "WHERE u.RoleID IN (1, 2)";
+                + "FROM Users u "
+                + "JOIN Contracts c ON u.UserID = c.StaffID "
+                + "WHERE u.RoleID IN (1, 2)";
         try (PreparedStatement ps = connection.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 Staff staff = new Staff(
-                    0,
-                    rs.getInt("UserID"),
-                    0,
-                    false
+                        0,
+                        rs.getInt("UserID"),
+                        0,
+                        false
                 );
                 staff.setFullName(rs.getString("FullName"));
                 staff.setPhone(rs.getString("Phone"));
@@ -136,16 +135,16 @@ public class StaffDAO extends DBContext {
     public List<Staff> getStaffInCheckingForms() {
         List<Staff> staffList = new ArrayList<>();
         String sql = "SELECT u.UserID, u.FullName, u.Phone, u.Email, cf.CheckingFormID "
-                   + "FROM Users u "
-                   + "JOIN CheckingForm cf ON u.UserID = cf.StaffID "
-                   + "WHERE u.RoleID = 1"; 
+                + "FROM Users u "
+                + "JOIN CheckingForm cf ON u.UserID = cf.StaffID "
+                + "WHERE u.RoleID = 1";
         try (PreparedStatement ps = connection.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 Staff staff = new Staff(
-                    0,
-                    rs.getInt("UserID"),
-                    0,
-                    false
+                        0,
+                        rs.getInt("UserID"),
+                        0,
+                        false
                 );
                 staff.setFullName(rs.getString("FullName"));
                 staff.setPhone(rs.getString("Phone"));
@@ -159,32 +158,33 @@ public class StaffDAO extends DBContext {
         return staffList;
     }
 
-    // Lấy danh sách MovingStaff có RoleID = 2 và chưa có hợp đồng
-    public List<Staff> getAvailableMovingStaffForContract(int limit) {
-        List<Staff> staffList = new ArrayList<>();
-        String sql = "SELECT TOP " + limit + " u.UserID, u.FullName, u.Phone, u.Email "
-                   + "FROM Users u "
-                   + "WHERE u.RoleID = 2 "
-                   + "AND NOT EXISTS (SELECT 1 FROM Contracts c WHERE c.StaffID = u.UserID)";
+    public List<Staff> getAvailableMovingStaff() {
+    List<Staff> staffList = new ArrayList<>();
+    String sql = "SELECT s.StaffID, u.UserID, u.FullName, u.Phone, u.Email " +
+                 "FROM Staff s " +
+                 "JOIN Users u ON s.UserID = u.UserID " +  // Liên kết bảng Users để lấy thông tin nhân viên
+                 "WHERE u.RoleID = 2 " +  // Chỉ lấy nhân viên có RoleID = 2
+                 "AND s.IsAvailable = 1";  // Chỉ lấy nhân viên đang rảnh
 
-        try (PreparedStatement ps = connection.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
-            
-            while (rs.next()) {
-                Staff staff = new Staff(
-                    0, // Không cần StaffID
-                    rs.getInt("UserID"),
-                    0, // Không cần PriceCostID
-                    true
-                );
-                staff.setFullName(rs.getString("FullName"));
-                staff.setPhone(rs.getString("Phone"));
-                staff.setEmail(rs.getString("Email"));
-                staffList.add(staff);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
+    try (PreparedStatement ps = connection.prepareStatement(sql);
+         ResultSet rs = ps.executeQuery()) {
+
+        while (rs.next()) {
+            Staff staff = new Staff(
+                rs.getInt("StaffID"),  // Lấy StaffID
+                rs.getInt("UserID"),
+                0,  // Không cần PriceCostID
+                true
+            );
+            staff.setFullName(rs.getString("FullName"));
+            staff.setPhone(rs.getString("Phone"));
+            staff.setEmail(rs.getString("Email"));
+            staffList.add(staff);
         }
-        return staffList;
+    } catch (SQLException e) {
+        e.printStackTrace();
     }
+    return staffList;
+}
+
 }
