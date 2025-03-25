@@ -7,10 +7,21 @@ package DAO;
 import DBConnect.DBContext;
 import Model.CheckingForm;
 import Model.Contract;
+<<<<<<< HEAD
 import java.math.BigDecimal;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+=======
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+import java.sql.Statement;
+>>>>>>> b5996a4bcd17749926d69557a2e93524a4fe712e
 
 /**
  *
@@ -21,6 +32,7 @@ public class ContractDAO extends DBContext {
     public Contract getContractById(int contractId) {
         Contract contract = null;
         String query = "SELECT c.ContractID, c.FinalCost, c.ContractStatusID, "
+<<<<<<< HEAD
                 + "cf.CheckingTime, cf.TransportTime, "
                 + "GROUP_CONCAT(DISTINCT at.TruckID) AS TruckIDs, "
                 + "GROUP_CONCAT(DISTINCT ast.StaffID) AS StaffIDs, "
@@ -34,6 +46,24 @@ public class ContractDAO extends DBContext {
                 + "GROUP BY c.ContractID";
 
         try (PreparedStatement statement = connection.prepareStatement(query)) {
+=======
+                + "       cf.CheckingTime, cf.TransportTime, "
+                + "       GROUP_CONCAT(DISTINCT at.TruckID) AS TruckIDs, "
+                + "       GROUP_CONCAT(DISTINCT ast.StaffID) AS StaffIDs, "
+                + "       tp.ProblemCost "
+                + "FROM Contracts c "
+                + "JOIN CheckingForm cf ON c.CheckingFormID = cf.CheckingFormID "
+                + "LEFT JOIN ArrangeTruck at ON c.ContractID = at.ContractID "
+                + // Thay đổi cách lấy Truck
+                "LEFT JOIN ArrangeStaff ast ON c.ContractID = ast.ContractID "
+                + // Thay đổi cách lấy Staff
+                "LEFT JOIN TransportProblemForm tp ON c.ContractID = tp.ContractID "
+                + "WHERE c.ContractID = ? "
+                + "GROUP BY c.ContractID";
+
+        try {
+            PreparedStatement statement = connection.prepareStatement(query);
+>>>>>>> b5996a4bcd17749926d69557a2e93524a4fe712e
             statement.setInt(1, contractId);
             ResultSet result = statement.executeQuery();
 
@@ -320,6 +350,7 @@ public class ContractDAO extends DBContext {
 
         return contract;
     }
+<<<<<<< HEAD
 
 //    public List<Contract> getAllContracts() {
 //        List<Contract> contracts = new ArrayList<>();
@@ -400,4 +431,6 @@ public class ContractDAO extends DBContext {
         }
         return false;
     }
+=======
+>>>>>>> b5996a4bcd17749926d69557a2e93524a4fe712e
 }

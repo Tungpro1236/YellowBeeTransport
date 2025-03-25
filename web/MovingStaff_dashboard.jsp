@@ -8,7 +8,9 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
+
 <html>
+    
 <head>
     <title>Moving Staff Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -80,11 +82,11 @@
                                                     </td>
                                                     <td>
                                                         <button type="button" class="btn btn-primary btn-sm"
-                                                                onclick="viewContract('${contract.contractID}')">
+                                                                onclick="viewContract(${contract.contractID})">
                                                             View Details
                                                         </button>
                                                         <button type="button" class="btn btn-warning btn-sm"
-                                                                onclick="reportProblem('${contract.contractID}')">
+                                                                onclick="reportProblem(${contract.contractID})">
                                                             Report Problem
                                                         </button>
                                                     </td>
