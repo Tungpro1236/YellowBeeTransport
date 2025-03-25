@@ -7,21 +7,16 @@ package DAO;
 import DBConnect.DBContext;
 import Model.CheckingForm;
 import Model.Contract;
-<<<<<<< HEAD
+
 import java.math.BigDecimal;
-import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
-=======
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 import java.sql.Statement;
->>>>>>> b5996a4bcd17749926d69557a2e93524a4fe712e
 
 /**
  *
@@ -31,8 +26,8 @@ public class ContractDAO extends DBContext {
 
     public Contract getContractById(int contractId) {
         Contract contract = null;
+
         String query = "SELECT c.ContractID, c.FinalCost, c.ContractStatusID, "
-<<<<<<< HEAD
                 + "cf.CheckingTime, cf.TransportTime, "
                 + "GROUP_CONCAT(DISTINCT at.TruckID) AS TruckIDs, "
                 + "GROUP_CONCAT(DISTINCT ast.StaffID) AS StaffIDs, "
@@ -43,11 +38,8 @@ public class ContractDAO extends DBContext {
                 + "LEFT JOIN ArrangeStaff ast ON c.ContractID = ast.ContractID "
                 + "LEFT JOIN TransportProblemForm tp ON c.ContractID = tp.ContractID "
                 + "WHERE c.ContractID = ? "
-                + "GROUP BY c.ContractID";
-
-        try (PreparedStatement statement = connection.prepareStatement(query)) {
-=======
-                + "       cf.CheckingTime, cf.TransportTime, "
+                + "GROUP BY c.ContractID"
+                +"cf.CheckingTime, cf.TransportTime, "
                 + "       GROUP_CONCAT(DISTINCT at.TruckID) AS TruckIDs, "
                 + "       GROUP_CONCAT(DISTINCT ast.StaffID) AS StaffIDs, "
                 + "       tp.ProblemCost "
@@ -63,7 +55,7 @@ public class ContractDAO extends DBContext {
 
         try {
             PreparedStatement statement = connection.prepareStatement(query);
->>>>>>> b5996a4bcd17749926d69557a2e93524a4fe712e
+
             statement.setInt(1, contractId);
             ResultSet result = statement.executeQuery();
 
@@ -124,7 +116,7 @@ public class ContractDAO extends DBContext {
                         .checkingFormId(result.getInt("CheckingFormID"))
                         .priceQuoteId(result.getInt("PriceQuoteID"))
                         .truckId(result.getInt("TruckID"))
-                        .staffId(result.getInt("StaffID"))
+                      //.staffId(result.getInt("StaffID"))
                         .finalCost(result.getDouble("FinalCost"))
                         .contractStatusId(result.getInt("ContractStatusID"))
                         .build();
@@ -186,7 +178,7 @@ public class ContractDAO extends DBContext {
                         .checkingFormId(result.getInt("CheckingFormID"))
                         .priceQuoteId(result.getInt("PriceQuoteID"))
                         .truckId(result.getInt("TruckID"))
-                        .staffId(result.getInt("StaffID"))
+                        //.staffId(result.getInt("StaffID"))
                         .finalCost(result.getDouble("FinalCost"))
                         .contractStatusId(result.getInt("ContractStatusID"))
                         .build();
@@ -212,7 +204,7 @@ public class ContractDAO extends DBContext {
                         .checkingFormId(result.getInt("CheckingFormID"))
                         .priceQuoteId(result.getInt("PriceQuoteID"))
                         .truckId(result.getInt("TruckID"))
-                        .staffId(result.getInt("StaffID"))
+                        //.staffId(result.getInt("StaffID"))
                         .finalCost(result.getDouble("FinalCost"))
                         .contractStatusId(result.getInt("ContractStatusID"))
                         .build();
@@ -344,13 +336,12 @@ public class ContractDAO extends DBContext {
         contract.setCheckingFormId(rs.getInt("checkingformID"));
         contract.setPriceQuoteId(rs.getInt("pricequoteID"));
         contract.setTruckId(rs.getInt("setTruckID"));
-        contract.setStaffId(rs.getInt("staffID"));
+        //contract.setStaffId(rs.getInt("staffID"));
         contract.setFinalCost(rs.getDouble("FinalCost"));
         contract.setContractStatusId(rs.getInt("contractstatusID"));
 
         return contract;
     }
-<<<<<<< HEAD
 
 //    public List<Contract> getAllContracts() {
 //        List<Contract> contracts = new ArrayList<>();
@@ -380,7 +371,6 @@ public class ContractDAO extends DBContext {
 //        }
 //        return contracts;
 //    }
-
     public boolean createContract(int priceQuoteID, String[] truckIDs, String[] staffIDs, BigDecimal finalCost, int checkingFormID) {
         String insertContractSQL = "INSERT INTO Contracts (PriceQuoteID, CheckingFormID, FinalCost, ContractStatusID, ContractDate) VALUES (?, ?, ?, ?, GETDATE());";
         String insertTruckSQL = "INSERT INTO ArrangeTruck (ContractID, TruckID) VALUES (?, ?);";
@@ -431,6 +421,5 @@ public class ContractDAO extends DBContext {
         }
         return false;
     }
-=======
->>>>>>> b5996a4bcd17749926d69557a2e93524a4fe712e
+
 }

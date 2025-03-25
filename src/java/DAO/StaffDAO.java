@@ -65,13 +65,13 @@ public class StaffDAO extends DBContext {
 
     private Staff mapResultSetToStaff(ResultSet rs) throws SQLException {
         Staff staff = new Staff();
-        staff.setStaffId(rs.getInt("StaffID"));
-        staff.setUserId(rs.getInt("UserID"));
-        staff.setFullname(rs.getString("FullName"));
+        staff.setStaffID(rs.getInt("StaffID"));
+        staff.setUserID(rs.getInt("UserID"));
+        staff.setFullName(rs.getString("FullName"));
         staff.setPhone(rs.getString("Phone"));
         staff.setEmail(rs.getString("Email"));
-        staff.setAddress(rs.getString("Address"));
-        staff.setStatus(rs.getString("Status"));
+        //.setAddress(rs.getString("Address"));
+        //staff.setStatus(rs.getString("Status"));
         return staff;
     }
 }

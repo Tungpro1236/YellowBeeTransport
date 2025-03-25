@@ -4,6 +4,7 @@
  */
 package Model;
 
+import java.util.Date;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -23,12 +24,8 @@ public class Contract {
     int checkingFormId;
     int priceQuoteId;
     int truckId;
-    int staffId;
+    Date contractDate;
     double finalCost;
     int contractStatusId;
-    
-    
-    
-    private String licensePlate;
     private CheckingForm checkingForm;
 }

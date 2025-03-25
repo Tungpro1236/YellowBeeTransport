@@ -95,10 +95,10 @@ public class WorkScheduleServlet extends HttpServlet {
             }
 
             // Get all shifts for the month
-            List<WorkShift> monthlyShifts = workShiftDAO.getShiftsByMonth(staff.getStaffId(), yearMonth.getYear(), yearMonth.getMonthValue());
+            List<WorkShift> monthlyShifts = workShiftDAO.getShiftsByMonth(staff.getStaffID(), yearMonth.getYear(), yearMonth.getMonthValue());
 
             // Get upcoming shifts (next 7 days)
-            List<WorkShift> upcomingShifts = workShiftDAO.getUpcomingShifts(staff.getStaffId(), 7);
+            List<WorkShift> upcomingShifts = workShiftDAO.getUpcomingShifts(staff.getStaffID(), 7);
 
             // Set attributes for JSP
             request.setAttribute("currentMonth", yearMonth);

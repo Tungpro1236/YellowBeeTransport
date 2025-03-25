@@ -136,17 +136,17 @@ public class CreateCheckingFormServlet extends HttpServlet {
             form.setAddress(address);
             form.setCheckingTime(checkingTime);
             form.setTransportTime(transportTime);
-<<<<<<< HEAD
+
             form.setServiceID(serviceID);
             //form.set(staff.getStaffId());
             //form.setCustomerID(customer);
             form.setStatus("pending");
-=======
-            form.setServiceId(serviceID);
-            form.setStaffId(staff.getStaffId());
+
+            form.setServiceID(serviceID);
+            form.setAssignedStaffID(staff.getStaffID());
             //form.setCustomer(customer);
             //form.setStatus("pending");
->>>>>>> b5996a4bcd17749926d69557a2e93524a4fe712e
+
 
             // Save to database
             checkingFormDAO.createCheckingForm(form);

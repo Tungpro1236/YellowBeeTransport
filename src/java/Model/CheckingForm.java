@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
 /**
  *
  * @author Admin
@@ -17,7 +18,7 @@ import lombok.NoArgsConstructor;
 @Data
 @Builder
 public class CheckingForm {
-<<<<<<< HEAD
+
   private int checkingFormID;
     private int customerID;
     private String name;
@@ -29,19 +30,18 @@ public class CheckingForm {
     private int serviceID;
     private String status;
     private int assignedStaffID;
-=======
-    int userId;
-    String name;
-    String phone;
-    String email;
-    String address;
-    Timestamp checkingTime;
-    Timestamp transportTime;
-    int serviceId;
-    int staffId;
-//    String Customer;
-//    String status;
->>>>>>> b5996a4bcd17749926d69557a2e93524a4fe712e
+
+//    int userId;
+//    String name;
+//    String phone;
+//    String email;
+//    String address;
+//    Timestamp checkingTime;
+//    Timestamp transportTime;
+//    int serviceId;
+//    int staffId;
+//   String Customer;
+//   String status;
 
    
 }

@@ -8,111 +8,79 @@ package DAO;
  *
  * @author Admin
  */
-import Model.TransportProblem;
 import DBConnect.DBContext;
-import java.sql.*;
+import Model.TransportProblem;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TransportProblemDAO extends DBContext {
-    
-    public void createTransportProblem(TransportProblem problem) throws SQLException {
-        String sql = "INSERT INTO TransportProblemForm (ContractID, ProblemDescription, ProblemCost, StaffID) VALUES (?, ?, ?, ?)";
+public class TransportProblemDAO {
+
+    private Connection connection;
+
+    public TransportProblemDAO() {
         try {
-            statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-            statement.setInt(1, problem.getContractID());
-            statement.setString(2, problem.getProblemDescription());
-            statement.setDouble(3, problem.getProblemCost());
-            statement.setInt(4, problem.getStaffID());
-            
-            statement.executeUpdate();
-            
-            result = statement.getGeneratedKeys();
-            if (result.next()) {
-                problem.setTpfID(result.getInt(1));
-            }
-        } finally {
-            if (result != null) result.close();
-            if (statement != null) statement.close();
+            DBContext db = new DBContext();
+            connection = db.connection;
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
-    
-    public List<TransportProblem> getProblemsByContractId(int contractId) throws SQLException {
-        List<TransportProblem> problems = new ArrayList<>();
-        String sql = "SELECT * FROM TransportProblemForm WHERE ContractID = ?";
-        
-        try {
-            statement = connection.prepareStatement(sql);
-            statement.setInt(1, contractId);
-            result = statement.executeQuery();
-            
-            while (result.next()) {
+
+    public List<TransportProblem> getAllTransportProblems() {
+        List<TransportProblem> problemList = new ArrayList<>();
+        String sql = "SELECT TPFID, ContractID, ProblemDescription, ProblemCost, StaffID, ReportDate, Status FROM TransportProblemForm";
+
+        try (PreparedStatement ps = connection.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
                 TransportProblem problem = new TransportProblem(
-                    result.getInt("TPFID"),
-                    result.getInt("ContractID"),
-                    result.getString("ProblemDescription"),
-                    result.getDouble("ProblemCost"),
-                    result.getInt("StaffID")
-                );
-                problems.add(problem);
+                        rs.getInt("TPFID"),
+                        rs.getInt("ContractID"),
+                        rs.getString("ProblemDescription"),
+                        rs.getDouble("ProblemCost"),
+                        rs.getInt("StaffID"));
+             
+
+                problemList.add(problem);
             }
-        } finally {
-            if (result != null) result.close();
-            if (statement != null) statement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-        return problems;
+        return problemList;
     }
-    
-    public List<TransportProblem> getProblemsByStaffId(int staffId) throws SQLException {
-        List<TransportProblem> problems = new ArrayList<>();
-        String sql = "SELECT * FROM TransportProblemForm WHERE StaffID = ?";
-        
-        try {
-            statement = connection.prepareStatement(sql);
-            statement.setInt(1, staffId);
-            result = statement.executeQuery();
-            
-            while (result.next()) {
-                TransportProblem problem = new TransportProblem(
-                    result.getInt("TPFID"),
-                    result.getInt("ContractID"),
-                    result.getString("ProblemDescription"),
-                    result.getDouble("ProblemCost"),
-                    result.getInt("StaffID")
-                );
-                problems.add(problem);
-            }
-        } finally {
-            if (result != null) result.close();
-            if (statement != null) statement.close();
-        }
-        return problems;
-    }
-    
-    public void updateTransportProblem(TransportProblem problem) throws SQLException {
-        String sql = "UPDATE TransportProblemForm SET ProblemDescription = ?, ProblemCost = ? WHERE TPFID = ?";
-        
-        try {
-            statement = connection.prepareStatement(sql);
-            statement.setString(1, problem.getProblemDescription());
-            statement.setDouble(2, problem.getProblemCost());
-            statement.setInt(3, problem.getTpfID());
-            
-            statement.executeUpdate();
-        } finally {
-            if (statement != null) statement.close();
+
+    public void updateProblemStatus(int tpfID, String status) {
+        String sql = "UPDATE TransportProblemForm SET Status = ? WHERE TPFID = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, status);
+            ps.setInt(2, tpfID);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
-    
-    public void deleteTransportProblem(int tpfId) throws SQLException {
-        String sql = "DELETE FROM TransportProblemForm WHERE TPFID = ?";
-        
-        try {
-            statement = connection.prepareStatement(sql);
-            statement.setInt(1, tpfId);
-            statement.executeUpdate();
-        } finally {
-            if (statement != null) statement.close();
+
+    public void applyCompensation(int contractID, double amount) {
+        String sql = "UPDATE Contracts SET FinalCost = FinalCost - ? WHERE ContractID = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setDouble(1, amount);
+            ps.setInt(2, contractID);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
-} 
+
+    public void cancelContract(int contractID) {
+        String sql = "UPDATE Contracts SET ContractStatusID = 3 WHERE ContractID = ?"; // 3 = Hủy hợp đồng
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, contractID);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+}

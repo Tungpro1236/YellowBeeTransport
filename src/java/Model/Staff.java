@@ -11,53 +11,97 @@ package Model;
  */
 public class Staff {
 
-    private int staffId;
-    private int userId;
-    private String fullname;
+    private int staffID;
+    private int userID;
+    private int priceCostID;
+    private boolean isAvailable;
+    private int roleID;
+    private String fullName;
     private String phone;
     private String email;
-    private String address;
-    private String status;
-    private int priceCostId;
-    private String name; // Thêm để hiển thị dễ hơn
+    private Integer currentContractID; // Nhân viên đang đi hợp đồng nào
+    private Integer currentCheckingFormID; // Nhân viên đang khảo sát CheckingForm nào
 
     public Staff() {
     }
 
-    public Staff(int staffId, int userId, int priceCostId, String fullname) {
-        this.staffId = staffId;
-        this.userId = userId;
-        this.fullname = fullname;
+    // Constructor 1: Dùng trong một số DAO cũ
+    public Staff(int staffID, int userID, int priceCostID, String fullName) {
+        this.staffID = staffID;
+        this.userID = userID;
+        this.priceCostID = priceCostID;
+        this.fullName = fullName;
+    }
+
+    // Constructor 2: Dùng trong một số DAO khác
+    public Staff(int staffID, int userID, int priceCostID, boolean isAvailable) {
+        this.staffID = staffID;
+        this.userID = userID;
+        this.priceCostID = priceCostID;
+        this.isAvailable = isAvailable;
+    }
+
+    // Constructor 3: Đầy đủ thông tin để hiển thị danh sách nhân viên
+    public Staff(int staffID, int userID, int priceCostID, boolean isAvailable, int roleID, String fullName, String phone, String email, Integer currentContractID, Integer currentCheckingFormID) {
+        this.staffID = staffID;
+        this.userID = userID;
+        this.priceCostID = priceCostID;
+        this.isAvailable = isAvailable;
+        this.roleID = roleID;
+        this.fullName = fullName;
         this.phone = phone;
         this.email = email;
-        this.address = address;
-        this.status = status;
-        this.priceCostId = priceCostId;
-        this.name = name;
+        this.currentContractID = currentContractID;
+        this.currentCheckingFormID = currentCheckingFormID;
     }
 
-    public int getStaffId() {
-        return staffId;
+    // Getter và Setter
+    public int getStaffID() {
+        return staffID;
     }
 
-    public void setStaffId(int staffId) {
-        this.staffId = staffId;
+    public void setStaffID(int staffID) {
+        this.staffID = staffID;
     }
 
-    public int getUserId() {
-        return userId;
+    public int getUserID() {
+        return userID;
     }
 
-    public void setUserId(int userId) {
-        this.userId = userId;
+    public void setUserID(int userID) {
+        this.userID = userID;
     }
 
-    public String getFullname() {
-        return fullname;
+    public int getPriceCostID() {
+        return priceCostID;
     }
 
-    public void setFullname(String fullname) {
-        this.fullname = fullname;
+    public void setPriceCostID(int priceCostID) {
+        this.priceCostID = priceCostID;
+    }
+
+    public boolean isAvailable() {
+        return isAvailable;
+    }
+
+    public void setAvailable(boolean isAvailable) {
+        this.isAvailable = isAvailable;
+    }
+
+    public int getRoleID() {
+        return roleID;
+    }
+
+    public void setRoleID(int roleID) {
+        this.roleID = roleID;
+    }
+
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
     }
 
     public String getPhone() {
@@ -76,36 +120,20 @@ public class Staff {
         this.email = email;
     }
 
-    public String getAddress() {
-        return address;
+    public Integer getCurrentContractID() {
+        return currentContractID;
     }
 
-    public void setAddress(String address) {
-        this.address = address;
+    public void setCurrentContractID(Integer currentContractID) {
+        this.currentContractID = currentContractID;
     }
 
-    public String getStatus() {
-        return status;
+    public Integer getCurrentCheckingFormID() {
+        return currentCheckingFormID;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public int getPriceCostId() {
-        return priceCostId;
-    }
-
-    public void setPriceCostId(int priceCostId) {
-        this.priceCostId = priceCostId;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
+    public void setCurrentCheckingFormID(Integer currentCheckingFormID) {
+        this.currentCheckingFormID = currentCheckingFormID;
     }
 
 }
