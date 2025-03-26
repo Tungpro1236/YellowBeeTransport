@@ -4,16 +4,27 @@
  */
 package DAO;
 
-import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import Model.CheckingForm;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import Model.Staff;
+import DBConnect.DBContext;
+import Model.CheckingForm;
 
 public class CheckingFormDAO {
+
     private final Connection connection;
 
-    public CheckingFormDAO(Connection connection) {
+    public CheckingFormDAO(java.sql.Connection connection) {
+        try {
+            DBContext db = new DBContext();
+            connection = db.connection;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         this.connection = connection;
     }
 
@@ -26,17 +37,18 @@ public class CheckingFormDAO {
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 CheckingForm form = new CheckingForm(
-                    rs.getInt("CheckingFormID"),
-                    rs.getInt("CustomerID"),
-                    rs.getString("Name"),
-                    rs.getString("Phone"),
-                    rs.getString("Email"),
-                    rs.getString("Address"),
-                    rs.getTimestamp("CheckingTime"),
-                    rs.getTimestamp("TransportTime"),
-                    rs.getInt("ServiceID"),
-                    rs.getString("Status"),
-                    rs.getInt("AssignedStaffID")
+                        rs.getInt("userId"),
+                        rs.getString("name"),
+                        rs.getString("phone"),
+                        rs.getString("email"),
+                        rs.getString("address"),
+                        rs.getTimestamp("checkingTime"),
+                        rs.getTimestamp("transportTime"),
+                        rs.getInt("serviceId"),
+                        rs.getInt("staffId"),
+                        rs.getString("status"),
+                        rs.getInt("checkingFormID"),
+                        rs.getInt("customerID")
                 );
                 list.add(form);
             }
@@ -50,16 +62,16 @@ public class CheckingFormDAO {
     public List<Staff> getAvailableStaff() {
         List<Staff> staffList = new ArrayList<>();
         String sql = "SELECT u.UserID, u.FullName, u.Phone, u.Email "
-                   + "FROM Users u "
-                   + "WHERE u.RoleID = 1 "
-                   + "AND NOT EXISTS (SELECT 1 FROM CheckingForm cf WHERE cf.AssignedStaffID = u.UserID)"; 
+                + "FROM Users u "
+                + "WHERE u.RoleID = 1 "
+                + "AND NOT EXISTS (SELECT 1 FROM CheckingForm cf WHERE cf.AssignedStaffID = u.UserID)";
         try (PreparedStatement ps = connection.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 Staff staff = new Staff(
-                    0,
-                    rs.getInt("UserID"),
-                    0,
-                    true
+                        0,
+                        rs.getInt("UserID"),
+                        0,
+                        true
                 );
                 staff.setFullName(rs.getString("FullName"));
                 staff.setPhone(rs.getString("Phone"));
@@ -85,7 +97,7 @@ public class CheckingFormDAO {
     }
 
     // Cập nhật trạng thái CheckingForm
-    public void updateCheckingFormStatus(int checkingFormID, String status) {
+    public void updateStatus(int checkingFormID, String status) {
         String sql = "UPDATE CheckingForm SET Status = ? WHERE CheckingFormID = ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, status);
@@ -95,4 +107,30 @@ public class CheckingFormDAO {
             e.printStackTrace();
         }
     }
+
+    public void createCheckingForm(CheckingForm form) throws SQLException {
+        String sql = "INSERT INTO CheckingForm (CustomerID, Name, Phone, Email, Address, "
+                + "CheckingTime, TransportTime, ServiceID, Status, StaffID) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        try( PreparedStatement statement = connection.prepareStatement(sql)){
+      
+        statement.setInt(1, form.getUserId());
+        statement.setString(2, form.getName());
+        statement.setString(3, form.getPhone());
+        statement.setString(4, form.getEmail());
+        statement.setString(5, form.getAddress());
+        statement.setTimestamp(6, form.getCheckingTime());
+        statement.setTimestamp(7, form.getTransportTime());
+        statement.setInt(8, form.getServiceID());
+        statement.setString(9, "pending"); // Default status as per DB constraint
+        statement.setInt(10, form.getStaffId());
+
+        statement.executeUpdate();
+        } catch(SQLException e){
+            e.printStackTrace();
+        }
+    }
+
+    
+
 }

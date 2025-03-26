@@ -6,14 +6,17 @@ package DAO;
 
 import Model.TransportProblemForm;
 import DBConnect.DBContext;
+import Model.TransportProblem;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class TransportProblemDAO {
+
     private Connection connection;
 
     public TransportProblemDAO() {
@@ -28,18 +31,17 @@ public class TransportProblemDAO {
     public List<TransportProblemForm> getAllTransportProblems() {
         List<TransportProblemForm> problemList = new ArrayList<>();
         String sql = "SELECT TPFID, ContractID, ProblemDescription, ProblemCost, StaffID, ReportDate, Status FROM TransportProblemForm";
-        
-        try (PreparedStatement ps = connection.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+
+        try (PreparedStatement ps = connection.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 TransportProblemForm problem = new TransportProblemForm(
-                    rs.getInt("TPFID"),
-                    rs.getInt("ContractID"),
-                    rs.getString("ProblemDescription"),
-                    rs.getDouble("ProblemCost"),
-                    rs.getInt("StaffID"),
-                    rs.getTimestamp("ReportDate").toLocalDateTime(),
-                    rs.getString("Status")
+                        rs.getInt("TPFID"),
+                        rs.getInt("ContractID"),
+                        rs.getString("ProblemDescription"),
+                        rs.getDouble("ProblemCost"),
+                        rs.getInt("StaffID"),
+                        rs.getTimestamp("ReportDate").toLocalDateTime(),
+                        rs.getString("Status")
                 );
                 problemList.add(problem);
             }
@@ -48,7 +50,25 @@ public class TransportProblemDAO {
         }
         return problemList;
     }
-    
+
+    public void createTransportProblem(TransportProblem problem) throws SQLException {
+        String sql = "INSERT INTO TransportProblemForm (ContractID, ProblemDescription, ProblemCost, StaffID) VALUES (?, ?, ?, ?)";
+        try (PreparedStatement ps = connection.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+            ps.setInt(1, problem.getContractID());
+            ps.setString(2, problem.getProblemDescription());
+            ps.setDouble(3, problem.getProblemCost());
+            ps.setInt(4, problem.getStaffID());
+
+            ps.executeUpdate();
+
+            if (rs.next()) {
+                problem.setTpfID(rs.getInt(1));
+            } 
+        }catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void updateProblemStatus(int tpfID, String status) {
         String sql = "UPDATE TransportProblemForm SET Status = ? WHERE TPFID = ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
@@ -59,7 +79,7 @@ public class TransportProblemDAO {
             e.printStackTrace();
         }
     }
-    
+
     public void applyCompensation(int contractID, double amount) {
         String sql = "UPDATE Contracts SET FinalCost = FinalCost - ? WHERE ContractID = ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
@@ -70,7 +90,7 @@ public class TransportProblemDAO {
             e.printStackTrace();
         }
     }
-    
+
     public void cancelContract(int contractID) {
         String sql = "UPDATE Contracts SET ContractStatusID = 3 WHERE ContractID = ?"; // 3 = Hủy hợp đồng
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
