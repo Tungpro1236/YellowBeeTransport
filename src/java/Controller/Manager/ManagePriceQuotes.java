@@ -58,7 +58,7 @@ public class ManagePriceQuotes extends HttpServlet {
             }
 
             if ("create".equals(action)) {
-                PriceQuote priceQuote = priceQuoteDAO.getPriceQuoteByID(priceQuoteID);
+                PriceQuote priceQuote = priceQuoteDAO.getPriceQuoteById(priceQuoteID);
 
                 if (priceQuote == null) {
                     request.setAttribute("error", "Price Quote không tồn tại.");

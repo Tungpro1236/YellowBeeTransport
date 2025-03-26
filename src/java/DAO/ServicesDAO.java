@@ -7,6 +7,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class ServicesDAO extends DBContext {
@@ -29,7 +30,7 @@ public class ServicesDAO extends DBContext {
                 String serviceName = result.getString("serviceName");
                 String serviceDescribe = result.getString("serviceDescribe");
                 String serviceImage = result.getString("serviceImage");
-                
+
                 service = Services.builder().
                         serviceID(serviceID).
                         serviceName(serviceName).
@@ -43,10 +44,43 @@ public class ServicesDAO extends DBContext {
             return null;
         }
     }
-public static void main(String[] args) {
+
+    public List<Services> getAllServices() throws SQLException {
+        List<Services> services = new ArrayList<>();
+        String sql = "SELECT * FROM Services ORDER BY ServiceID";
+
+        try {
+            statement = connection.prepareStatement(sql);
+            result = statement.executeQuery();
+
+            while (result.next()) {
+                services.add(mapResultSetToService(result));
+            }
+        } finally {
+            if (statement != null) {
+                statement.close();
+            }
+            if (result != null) {
+                result.close();
+            }
+        }
+        return services;
+    }
+
+    private Services mapResultSetToService(ResultSet rs) throws SQLException {
+        Services services = Services.builder()
+                .serviceID(rs.getInt("ServiceID"))
+                .serviceName(rs.getString("ServiceName"))
+                .serviceDescribe(rs.getString("ServiceDescribe"))
+                .serviceImage(rs.getString("ServiceImage"))
+                .build();
+        return services;
+    }
+
+    public static void main(String[] args) {
         // Khởi tạo đối tượng ServicesDAO
         ServicesDAO servicesDAO = new ServicesDAO();
-        
+
         // Test phương thức getServiceById
         int testId = 1;  // Thay đổi ID này theo dữ liệu trong database của bạn
         Services service = servicesDAO.getServiceById(testId);
@@ -58,5 +92,5 @@ public static void main(String[] args) {
             System.out.println("Không tìm thấy dịch vụ với ID: " + testId);
         }
     }
-    
+
 }

@@ -70,10 +70,10 @@ public class ManageCheckingForms extends HttpServlet {
             int checkingFormID = Integer.parseInt(request.getParameter("checkingFormID"));
             int staffID = Integer.parseInt(request.getParameter("staffID"));
             checkingFormDAO.assignStaffToCheckingForm(checkingFormID, staffID);
-            checkingFormDAO.updateCheckingFormStatus(checkingFormID, "Approved");
+            checkingFormDAO.updateStatus(checkingFormID, "Approved");
         } else if ("reject".equals(action)) {
             int checkingFormID = Integer.parseInt(request.getParameter("checkingFormID"));
-            checkingFormDAO.updateCheckingFormStatus(checkingFormID, "Rejected");
+            checkingFormDAO.updateStatus(checkingFormID, "Rejected");
         }
 
         // Reload danh sách sau khi thực hiện action

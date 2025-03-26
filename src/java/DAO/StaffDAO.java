@@ -158,33 +158,74 @@ public class StaffDAO extends DBContext {
         return staffList;
     }
 
-    public List<Staff> getAvailableMovingStaff() {
-    List<Staff> staffList = new ArrayList<>();
-    String sql = "SELECT s.StaffID, u.UserID, u.FullName, u.Phone, u.Email " +
-                 "FROM Staff s " +
-                 "JOIN Users u ON s.UserID = u.UserID " +  // Liên kết bảng Users để lấy thông tin nhân viên
-                 "WHERE u.RoleID = 2 " +  // Chỉ lấy nhân viên có RoleID = 2
-                 "AND s.IsAvailable = 1";  // Chỉ lấy nhân viên đang rảnh
+    public Staff getStaffByUserID(int userId) throws SQLException {
+        String sql = "SELECT s.*, u.FullName, u.Phone, u.Email, u.Address "
+                + "FROM Staff s "
+                + "JOIN Users u ON s.UserID = u.UserID "
+                + "WHERE s.UserID = ?";
 
-    try (PreparedStatement ps = connection.prepareStatement(sql);
-         ResultSet rs = ps.executeQuery()) {
+        try {
+            statement = connection.prepareStatement(sql);
+            statement.setInt(1, userId);
+            result = statement.executeQuery();
 
-        while (rs.next()) {
-            Staff staff = new Staff(
-                rs.getInt("StaffID"),  // Lấy StaffID
-                rs.getInt("UserID"),
-                0,  // Không cần PriceCostID
-                true
-            );
-            staff.setFullName(rs.getString("FullName"));
-            staff.setPhone(rs.getString("Phone"));
-            staff.setEmail(rs.getString("Email"));
-            staffList.add(staff);
+            if (result.next()) {
+                return mapResultSetToStaff(result);
+            }
+        } finally {
+            if (statement != null) {
+                statement.close();
+            }
+            if (result != null) {
+                result.close();
+            }
         }
-    } catch (SQLException e) {
-        e.printStackTrace();
+        return null;
     }
-    return staffList;
-}
+
+    private Staff mapResultSetToStaff(ResultSet rs) throws SQLException {
+        Staff staff = new Staff(rs.getInt("StaffID"),
+                rs.getInt("UserID"), 
+                rs.getInt("priceCostID"),
+                true, rs.getInt("roleID"), 
+                rs.getString("FullName"), 
+                rs.getString("Phone"), 
+                rs.getString("Email"), 
+                Integer.MIN_VALUE, 
+                Integer.MIN_VALUE);
+
+
+        return staff;
+    }
+
+    public List<Staff> getAvailableMovingStaff() {
+        List<Staff> staffList = new ArrayList<>();
+        String sql = "SELECT s.StaffID, u.UserID, u.FullName, u.Phone, u.Email "
+                + "FROM Staff s "
+                + "JOIN Users u ON s.UserID = u.UserID "
+                + // Liên kết bảng Users để lấy thông tin nhân viên
+                "WHERE u.RoleID = 2 "
+                + // Chỉ lấy nhân viên có RoleID = 2
+                "AND s.IsAvailable = 1";  // Chỉ lấy nhân viên đang rảnh
+
+        try (PreparedStatement ps = connection.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                Staff staff = new Staff(
+                        rs.getInt("StaffID"), // Lấy StaffID
+                        rs.getInt("UserID"),
+                        0, // Không cần PriceCostID
+                        true
+                );
+                staff.setFullName(rs.getString("FullName"));
+                staff.setPhone(rs.getString("Phone"));
+                staff.setEmail(rs.getString("Email"));
+                staffList.add(staff);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return staffList;
+    }
 
 }

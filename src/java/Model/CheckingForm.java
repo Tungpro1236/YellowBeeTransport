@@ -24,8 +24,8 @@ public class CheckingForm {
     String address;
     Timestamp checkingTime;
     Timestamp transportTime;
-    int serviceId;
-    int staffId;
+    int serviceID;
+    int assignedStaffID;
     String status;
      int checkingFormID;
       int customerID;
