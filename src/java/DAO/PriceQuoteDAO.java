@@ -13,6 +13,7 @@ import Model.PriceQuote;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.math.BigDecimal;
 
 public class PriceQuoteDAO {
 
@@ -33,15 +34,15 @@ public class PriceQuoteDAO {
 
         try (PreparedStatement stmt = connection.prepareStatement(query); ResultSet rs = stmt.executeQuery()) {
             while (rs.next()) {
-                priceQuotes.add(new PriceQuote(
-                        rs.getInt("PriceQuoteID"),
-                        rs.getInt("TruckAmount"),
-                        rs.getInt("StaffAmount"),
-                        rs.getDouble("FinalCost"),
-                        rs.getInt("PriceCostID"),
-                        rs.getInt("CheckingFormID"),
-                        rs.getString("Status")
-                ));
+                priceQuotes.add(PriceQuote.builder()
+                        .priceQuoteID(rs.getInt("PriceQuoteID"))
+                        .truckAmount(rs.getInt("TruckAmount"))
+                        .staffAmount(rs.getInt("StaffAmount"))
+                        .finalCost(rs.getBigDecimal("FinalCost"))
+                        .priceCostID(rs.getInt("PriceCostID"))
+                        .checkingFormID(rs.getInt("CheckingFormID"))
+                        .status(rs.getString("Status"))
+                        .build());
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -127,31 +128,88 @@ public class PriceQuoteDAO {
         }
     }
     
-    public PriceQuote getPriceQuoteByID(int priceQuoteID) {
-    PriceQuote priceQuote = null;
-    String sql = "SELECT PriceQuoteID, CheckingFormID, TruckAmount, StaffAmount, FinalCost, PriceCostID " +
-                 "FROM PriceQuote WHERE PriceQuoteID = ?";
-    
-    try (Connection conn = new DBContext().connection;
-         PreparedStatement stmt = conn.prepareStatement(sql)) {
-        
-        stmt.setInt(1, priceQuoteID);
-        ResultSet rs = stmt.executeQuery();
-        
-        if (rs.next()) {
-            priceQuote = new PriceQuote();
-            priceQuote.setPriceQuoteID(rs.getInt("PriceQuoteID"));          
-            priceQuote.setTruckAmount(rs.getInt("TruckAmount"));
-            priceQuote.setStaffAmount(rs.getInt("StaffAmount"));
-            priceQuote.setFinalCost(rs.getBigDecimal("FinalCost"));
-            priceQuote.setPriceCostID(rs.getInt("PriceCostID"));
-            priceQuote.setCheckingFormID(rs.getInt("CheckingFormID"));
+    public PriceQuote getPriceQuoteById(int priceQuoteID) {
+        String query = "SELECT * FROM PriceQuote WHERE PriceQuoteID = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setInt(1, priceQuoteID);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return PriceQuote.builder()
+                        .priceQuoteID(rs.getInt("PriceQuoteID"))
+                        .truckAmount(rs.getInt("TruckAmount"))
+                        .staffAmount(rs.getInt("StaffAmount"))
+                        .finalCost(rs.getBigDecimal("FinalCost"))
+                        .priceCostID(rs.getInt("PriceCostID"))
+                        .checkingFormID(rs.getInt("CheckingFormID"))
+                        .status(rs.getString("Status"))
+                        .build();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-               
-    } catch (SQLException e) {
-        e.printStackTrace();
+        return null;
     }
-    
-    return priceQuote;
-}
+
+    public void createPriceQuote(PriceQuote priceQuote) {
+        String query = "INSERT INTO PriceQuote (TruckAmount, StaffAmount, FinalCost, PriceCostID, CheckingFormID, Status) VALUES (?, ?, ?, ?, ?, ?)";
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setInt(1, priceQuote.getTruckAmount());
+            stmt.setInt(2, priceQuote.getStaffAmount());
+            stmt.setBigDecimal(3, priceQuote.getFinalCost());
+            stmt.setInt(4, priceQuote.getPriceCostID());
+            stmt.setInt(5, priceQuote.getCheckingFormID());
+            stmt.setString(6, "Pending"); // Default status
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void updatePriceQuote(PriceQuote priceQuote) {
+        String query = "UPDATE PriceQuote SET TruckAmount = ?, StaffAmount = ?, FinalCost = ?, PriceCostID = ?, CheckingFormID = ?, Status = ? WHERE PriceQuoteID = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setInt(1, priceQuote.getTruckAmount());
+            stmt.setInt(2, priceQuote.getStaffAmount());
+            stmt.setBigDecimal(3, priceQuote.getFinalCost());
+            stmt.setInt(4, priceQuote.getPriceCostID());
+            stmt.setInt(5, priceQuote.getCheckingFormID());
+            stmt.setString(6, priceQuote.getStatus());
+            stmt.setInt(7, priceQuote.getPriceQuoteID());
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void deletePriceQuote(int priceQuoteID) {
+        String query = "DELETE FROM PriceQuote WHERE PriceQuoteID = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setInt(1, priceQuoteID);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public BigDecimal calculateFinalCost(int truckAmount, int staffAmount, int priceCostID) {
+        // Get price costs from database
+        String query = "SELECT TruckPrice, StaffPrice FROM PriceCost WHERE PriceCostID = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setInt(1, priceCostID);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                BigDecimal truckPrice = rs.getBigDecimal("TruckPrice");
+                BigDecimal staffPrice = rs.getBigDecimal("StaffPrice");
+                
+                // Calculate final cost
+                BigDecimal truckTotal = truckPrice.multiply(BigDecimal.valueOf(truckAmount));
+                BigDecimal staffTotal = staffPrice.multiply(BigDecimal.valueOf(staffAmount));
+                
+                return truckTotal.add(staffTotal);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return BigDecimal.ZERO;
+    }
 }

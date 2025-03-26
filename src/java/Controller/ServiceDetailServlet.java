@@ -10,8 +10,11 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import DAO.ServicesDAO;
-import Model.Services;
+import DAO.ServiceDAO;
+import Model.Service;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -21,11 +24,15 @@ public class ServiceDetailServlet extends HttpServlet {
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        ServicesDAO serDao = new ServicesDAO();
-        int id = Integer.parseInt(request.getParameter("id"));
-        Services service = serDao.getServiceById(id);
-        request.setAttribute("service", service);
-        request.getRequestDispatcher("/frontend/view/service_detail.jsp").forward(request, response);
+        try {
+            ServiceDAO serDao = new ServiceDAO();
+            int id = Integer.parseInt(request.getParameter("id"));
+            Service service = serDao.getServiceById(id);
+            request.setAttribute("service", service);
+            request.getRequestDispatcher("/frontend/view/service_detail.jsp").forward(request, response);
+        } catch (SQLException ex) {
+            Logger.getLogger(ServiceDetailServlet.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
     }
 
