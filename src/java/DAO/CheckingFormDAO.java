@@ -11,6 +11,7 @@ import Model.CheckingForm;
 import Model.Staff;
 
 public class CheckingFormDAO {
+
     private final Connection connection;
 
     public CheckingFormDAO(Connection connection) {
@@ -26,17 +27,18 @@ public class CheckingFormDAO {
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 CheckingForm form = new CheckingForm(
-                    rs.getInt("CheckingFormID"),
-                    rs.getInt("CustomerID"),
-                    rs.getString("Name"),
-                    rs.getString("Phone"),
-                    rs.getString("Email"),
-                    rs.getString("Address"),
-                    rs.getTimestamp("CheckingTime"),
-                    rs.getTimestamp("TransportTime"),
-                    rs.getInt("ServiceID"),
-                    rs.getString("Status"),
-                    rs.getInt("AssignedStaffID")
+                        rs.getInt("userId"),
+                        rs.getString("name"),
+                        rs.getString("phone"),
+                        rs.getString("email"),
+                        rs.getString("address"),
+                        rs.getTimestamp("checkingTime"),
+                        rs.getTimestamp("transportTime"),
+                        rs.getInt("serviceId"),
+                        rs.getInt("staffId"),
+                        rs.getString("status"),
+                        rs.getInt("checkingFormID"),
+                        rs.getInt("customerID")
                 );
                 list.add(form);
             }
@@ -50,16 +52,16 @@ public class CheckingFormDAO {
     public List<Staff> getAvailableStaff() {
         List<Staff> staffList = new ArrayList<>();
         String sql = "SELECT u.UserID, u.FullName, u.Phone, u.Email "
-                   + "FROM Users u "
-                   + "WHERE u.RoleID = 1 "
-                   + "AND NOT EXISTS (SELECT 1 FROM CheckingForm cf WHERE cf.AssignedStaffID = u.UserID)"; 
+                + "FROM Users u "
+                + "WHERE u.RoleID = 1 "
+                + "AND NOT EXISTS (SELECT 1 FROM CheckingForm cf WHERE cf.AssignedStaffID = u.UserID)";
         try (PreparedStatement ps = connection.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 Staff staff = new Staff(
-                    0,
-                    rs.getInt("UserID"),
-                    0,
-                    true
+                        0,
+                        rs.getInt("UserID"),
+                        0,
+                        true
                 );
                 staff.setFullName(rs.getString("FullName"));
                 staff.setPhone(rs.getString("Phone"));
